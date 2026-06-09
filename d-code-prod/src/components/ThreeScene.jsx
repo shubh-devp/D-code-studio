@@ -61,9 +61,18 @@ function CrystalMesh({ isMobile }) {
   });
 
   return (
-    <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.3}>
-      <mesh ref={meshRef}>
-        <icosahedronGeometry args={[1.8, detail]} />
+    <Float
+  speed={isMobile ? 0.8 : 1.2}
+  rotationIntensity={isMobile ? 0.05 : 0.1}
+  floatIntensity={isMobile ? 0.15 : 0.3}
+>
+      <mesh
+  ref={meshRef}
+  scale={isMobile ? 0.85 : 1}
+>
+        <icosahedronGeometry
+  args={[isMobile ? 1.2 : 1.8, detail]}
+/>
         <meshPhysicalMaterial
           color="#7c4dff"
           emissive="#1a0038"
@@ -95,7 +104,9 @@ function WireShell({ isMobile }) {
   });
   return (
     <mesh ref={ref}>
-      <icosahedronGeometry args={[2.3, detail]} />
+      <icosahedronGeometry
+  args={[isMobile ? 1.6 : 2.3, detail]}
+/>
       <meshBasicMaterial color="#8B5CF6" wireframe transparent opacity={0.08} />
     </mesh>
   );
@@ -168,24 +179,32 @@ function CursorLight({ isMobile }) {
 export function ThreeDBackground({ isMobile }) {
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-      <Canvas
-        camera={{ position: [0, 0, 5.5], fov: 55 }}
-        gl={{
-          antialias: !isMobile,
-          alpha: true,
-          powerPreference: isMobile ? "low-power" : "high-performance",
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.4,
-        }}
-        dpr={isMobile ? [1, 1] : [1, 2]}
-        frameloop={isMobile ? "demand" : "always"}
-        performance={{ min: 0.5 }}
-        style={{ background: "transparent" }}
-      >
+<Canvas
+  camera={{
+    position: [0, 0, isMobile ? 8 : 5.5],
+    fov: isMobile ? 75 : 55,
+  }}
+  gl={{
+    antialias: !isMobile,
+    alpha: true,
+    powerPreference: isMobile ? "low-power" : "high-performance",
+    toneMapping: THREE.ACESFilmicToneMapping,
+    toneMappingExposure: 1.4,
+  }}
+  dpr={isMobile ? [1, 1.5] : [1, 2]}
+  frameloop="always"
+  performance={{ min: 0.5 }}
+  style={{ background: "transparent" }}
+>
         <Suspense fallback={null}>
           <ambientLight color="#1a1040" intensity={2.5} />
           <directionalLight color="#9FAEF8" intensity={3.5} position={[5, 8, 6]} />
-          <pointLight color="#8B5CF6" intensity={8} position={[-5, -3, 3]} distance={12} />
+          <pointLight
+  color="#8B5CF6"
+  intensity={isMobile ? 5 : 8}
+  position={[-5, -3, 3]}
+  distance={isMobile ? 9 : 12}
+/>
           <CursorLight isMobile={isMobile} />
           <CrystalMesh isMobile={isMobile} />
           <WireShell isMobile={isMobile} />
