@@ -13,7 +13,7 @@ const WHY = [
 export function WhyUs() {
   return (
     <Section id="why-choose-us">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: SP["3xl"], alignItems: "center" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(320px,100%),1fr))", gap: SP["3xl"], alignItems: "center" }}>
         <Reveal>
           <SectionHeading
             align="left"
@@ -27,7 +27,7 @@ export function WhyUs() {
             </MagneticBtn>
           </div>
         </Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: SP.md }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(150px,100%),1fr))", gap: SP.md }}>
           {WHY.map((w, i) => (
             <Reveal key={w.title} delay={i * 0.08}>
               <GlassCard style={{ padding: SP.lg, height: "100%" }}>
@@ -57,7 +57,7 @@ export function Testimonials() {
   return (
     <Section id="testimonials" alt>
       <SectionHeading label="Testimonials" title={<>What Our <GradientText>Clients Say</GradientText></>} subtitle="A few words from the founders and operators we've partnered with." />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(300px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
         {TESTIMONIALS.map((t, i) => (
           <Reveal key={t.name} delay={(i % 3) * 0.08}>
             <GlassCard style={{ padding: SP.xl, height: "100%", display: "flex", flexDirection: "column" }}>
@@ -92,7 +92,7 @@ export function Team() {
   return (
     <Section id="team">
       <SectionHeading label="Our Team" title={<>The People Behind <GradientText>Your Growth</GradientText></>} subtitle="Senior specialists who've shipped for startups and enterprises alike." />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(220px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
         {TEAM.map((m, i) => (
           <Reveal key={m.name} delay={(i % 3) * 0.08}>
             <Tilt3D max={12}>
@@ -125,7 +125,7 @@ export function Process() {
   return (
     <Section id="process" alt>
       <SectionHeading label="How We Work" title={<>Our <GradientText>Proven Process</GradientText></>} subtitle="A transparent, repeatable system that turns ambition into shipped results." />
-      <ol style={{ listStyle: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: SP.lg, marginTop: SP["2xl"], padding: 0, counterReset: "step" }}>
+      <ol style={{ listStyle: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"], padding: 0, counterReset: "step" }}>
         {STEPS.map((s, i) => (
           <Reveal as="li" key={s.n} delay={i * 0.08} style={{ position: "relative" }}>
             <Tilt3D max={9}>
@@ -284,7 +284,7 @@ export function Contact() {
 
   return (
     <Section id="contact">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: SP["3xl"], alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(300px,100%),1fr))", gap: SP["3xl"], alignItems: "start" }}>
         <Reveal>
           <SectionHeading align="left" label="Get in Touch" title={<>Ready to Build <GradientText>Something Great?</GradientText></>} subtitle="Tell us about your project and we'll get back to you within two business days." />
           <div style={{ marginTop: SP.lg, display: "grid", gap: SP.sm }}>

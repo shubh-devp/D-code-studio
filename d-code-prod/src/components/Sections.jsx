@@ -26,7 +26,7 @@ export function Stats() {
   ];
   return (
     <section ref={ref} aria-label="Key metrics" style={{ padding: `${SP["4xl"]}px 5vw`, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: SP["2xl"], textAlign: "center" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: SP["2xl"], textAlign: "center" }}>
         {stats.map((s, i) => (
           <StatItem key={s.label} {...s} inView={inView} delay={i * 0.1} />
         ))}
@@ -50,7 +50,7 @@ export function Services() {
         title={<>Services Built for <GradientText>Ambitious Brands</GradientText></>}
         subtitle="Full-stack growth — from the first ad impression to a polished product experience."
       />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(280px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
         {SERVICES.map((s, i) => (
           <Reveal key={s.title} delay={i * 0.07}>
             <Tilt3D>
@@ -113,7 +113,7 @@ export function Portfolio() {
           </button>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: SP.lg }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(320px,100%),1fr))", gap: SP.lg }}>
         {filtered.map((p, i) => (
           <Reveal key={p.title} delay={i * 0.06}>
             <Tilt3D max={8}>

@@ -49,7 +49,7 @@ export function Section({ id, children, alt = false, style = {}, ariaLabel }) {
       id={id}
       aria-label={ariaLabel || (id ? id.replace(/-/g, " ") : undefined)}
       style={{
-        padding: `${SP["5xl"]}px 5vw`,
+        padding: `clamp(56px, 9vw, ${SP["5xl"]}px) 5vw`,
         background: alt ? C.bgAlt : "transparent",
         ...style,
       }}
