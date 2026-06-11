@@ -1,6 +1,1 @@
 @import "tailwindcss";
-
-/* This app is always dark. Make Tailwind's `dark:` variant class-based
-   (instead of OS preference) so components like the scroll card render
-   consistently in dark mode. The `dark` class is set on <html>. */
-@custom-variant dark (&:where(.dark, .dark *));

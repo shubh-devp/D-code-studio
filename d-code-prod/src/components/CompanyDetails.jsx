@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { C, SP, RADIUS, EASE } from "../constants/theme";
-import { Reveal, GradientText, GlassCard, MagneticBtn, SectionHeading, Section, Tag, Tilt3D } from "./Primitives";
+import { Reveal, GlassCard, MagneticBtn, SectionHeading, Section, Tag } from "./Primitives";
 
 /* ------------------------------- Why Us -------------------------------- */
 const WHY = [
@@ -18,21 +18,21 @@ export function WhyUs() {
           <SectionHeading
             align="left"
             label="Why D-Code"
-            title={<>Not Just an Agency.<br /><GradientText>A Growth Partner.</GradientText></>}
+            title="Not just an agency. A growth partner."
             subtitle="We embed inside your team and your systems to compound results month over month — transparently, and accountably."
           />
           <div style={{ marginTop: SP.lg }}>
             <MagneticBtn primary onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}>
-              Let's Talk Strategy →
+              Let's talk strategy
             </MagneticBtn>
           </div>
         </Reveal>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(150px,100%),1fr))", gap: SP.md }}>
           {WHY.map((w, i) => (
-            <Reveal key={w.title} delay={i * 0.08}>
+            <Reveal key={w.title} delay={i * 0.06}>
               <GlassCard style={{ padding: SP.lg, height: "100%" }}>
-                <div style={{ fontSize: 26, marginBottom: SP.sm }} aria-hidden="true">{w.icon}</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 6px" }}>{w.title}</h3>
+                <div aria-hidden="true" style={{ width: 40, height: 40, borderRadius: RADIUS.md, background: C.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, marginBottom: SP.sm }}>{w.icon}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 6px", color: C.text }}>{w.title}</h3>
                 <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, margin: 0 }}>{w.desc}</p>
               </GlassCard>
             </Reveal>
@@ -45,26 +45,26 @@ export function WhyUs() {
 
 /* ----------------------------- Testimonials ---------------------------- */
 const TESTIMONIALS = [
-  { quote: "D-Code rebuilt our funnel and tripled qualified leads in 90 days. They operate like an in-house team that actually ships.", name: "Aarav Mehta", role: "Founder, Luxe Realty", avatar: "AM", color: "#8B5CF6" },
-  { quote: "Our Shopify store went from a side project to ₹2Cr in year one. The CRO work alone paid for the engagement many times over.", name: "Priya Nair", role: "CEO, Bloom & Co", avatar: "PN", color: "#06B6D4" },
-  { quote: "The AI automation they built handles 70% of our support tickets. My team finally focuses on customers instead of busywork.", name: "Rohan Gupta", role: "COO, TechServe", avatar: "RG", color: "#10B981" },
-  { quote: "ROAS went from 1.8× to 6× while we scaled spend 6×. I've worked with five agencies — none came close to this.", name: "Sara Khan", role: "CMO, EduPrime", avatar: "SK", color: "#F59E0B" },
-  { quote: "Site load dropped from 2.1s to 0.6s and conversions jumped 28%. Fast, communicative, and genuinely strategic.", name: "Daniel Brooks", role: "Head of Growth, Northwind", avatar: "DB", color: "#EC4899" },
-  { quote: "They treated our brand like their own. The new storefront lifted AOV 62% and our team actually enjoys managing it.", name: "Meera Iyer", role: "Director, Vanta Apparel", avatar: "MI", color: "#06B6D4" },
+  { quote: "D-Code rebuilt our funnel and tripled qualified leads in 90 days. They operate like an in-house team that actually ships.", name: "Aarav Mehta", role: "Founder, Luxe Realty", avatar: "AM", color: "#2563EB" },
+  { quote: "Our Shopify store went from a side project to ₹2Cr in year one. The CRO work alone paid for the engagement many times over.", name: "Priya Nair", role: "CEO, Bloom & Co", avatar: "PN", color: "#0891B2" },
+  { quote: "The AI automation they built handles 70% of our support tickets. My team finally focuses on customers instead of busywork.", name: "Rohan Gupta", role: "COO, TechServe", avatar: "RG", color: "#059669" },
+  { quote: "ROAS went from 1.8× to 6× while we scaled spend 6×. I've worked with five agencies — none came close to this.", name: "Sara Khan", role: "CMO, EduPrime", avatar: "SK", color: "#D97706" },
+  { quote: "Site load dropped from 2.1s to 0.6s and conversions jumped 28%. Fast, communicative, and genuinely strategic.", name: "Daniel Brooks", role: "Head of Growth, Northwind", avatar: "DB", color: "#DB2777" },
+  { quote: "They treated our brand like their own. The new storefront lifted AOV 62% and our team actually enjoys managing it.", name: "Meera Iyer", role: "Director, Vanta Apparel", avatar: "MI", color: "#7C3AED" },
 ];
 
 export function Testimonials() {
   return (
     <Section id="testimonials" alt>
-      <SectionHeading label="Testimonials" title={<>What Our <GradientText>Clients Say</GradientText></>} subtitle="A few words from the founders and operators we've partnered with." />
+      <SectionHeading label="Testimonials" title="What our clients say" subtitle="A few words from the founders and operators we've partnered with." />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(300px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
         {TESTIMONIALS.map((t, i) => (
-          <Reveal key={t.name} delay={(i % 3) * 0.08}>
+          <Reveal key={t.name} delay={(i % 3) * 0.06}>
             <GlassCard style={{ padding: SP.xl, height: "100%", display: "flex", flexDirection: "column" }}>
-              <div style={{ color: "#FBBF24", fontSize: 16, letterSpacing: 2, marginBottom: SP.md }} aria-label="5 out of 5 stars">★★★★★</div>
+              <div style={{ color: "#F59E0B", fontSize: 15, letterSpacing: 2, marginBottom: SP.md }} aria-label="5 out of 5 stars">★★★★★</div>
               <blockquote style={{ color: C.text, fontSize: 15, lineHeight: 1.7, margin: 0, flex: 1 }}>"{t.quote}"</blockquote>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 12, marginTop: SP.lg }}>
-                <span aria-hidden="true" style={{ width: 44, height: 44, borderRadius: "50%", background: `linear-gradient(135deg, ${t.color}, ${t.color}99)`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 15, color: "#fff" }}>{t.avatar}</span>
+                <span aria-hidden="true" style={{ width: 44, height: 44, borderRadius: "50%", background: t.color, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 15, color: "#fff" }}>{t.avatar}</span>
                 <span>
                   <span style={{ display: "block", fontWeight: 600, fontSize: 14, color: C.text }}>{t.name}</span>
                   <span style={{ display: "block", fontSize: 13, color: C.textMuted }}>{t.role}</span>
@@ -80,31 +80,29 @@ export function Testimonials() {
 
 /* -------------------------------- Team --------------------------------- */
 const TEAM = [
-  { name: "Arjun Kapoor", role: "Founder & Strategy", avatar: "AK", color: "#8B5CF6", tags: ["Growth", "Vision"] },
-  { name: "Nisha Rao", role: "Head of Design", avatar: "NR", color: "#06B6D4", tags: ["UX", "Brand"] },
-  { name: "Vikram Shah", role: "Lead Engineer", avatar: "VS", color: "#10B981", tags: ["React", "Architecture"] },
-  { name: "Tara Singh", role: "Performance Lead", avatar: "TS", color: "#F59E0B", tags: ["Meta Ads", "Analytics"] },
-  { name: "Karan Patel", role: "Automation Engineer", avatar: "KP", color: "#EC4899", tags: ["AI", "n8n"] },
-  { name: "Ananya Bose", role: "Client Success", avatar: "AB", color: "#A78BFA", tags: ["Strategy", "Ops"] },
+  { name: "Arjun Kapoor", role: "Founder & Strategy", avatar: "AK", color: "#2563EB", tags: ["Growth", "Vision"] },
+  { name: "Nisha Rao", role: "Head of Design", avatar: "NR", color: "#0891B2", tags: ["UX", "Brand"] },
+  { name: "Vikram Shah", role: "Lead Engineer", avatar: "VS", color: "#059669", tags: ["React", "Architecture"] },
+  { name: "Tara Singh", role: "Performance Lead", avatar: "TS", color: "#D97706", tags: ["Meta Ads", "Analytics"] },
+  { name: "Karan Patel", role: "Automation Engineer", avatar: "KP", color: "#DB2777", tags: ["AI", "n8n"] },
+  { name: "Ananya Bose", role: "Client Success", avatar: "AB", color: "#7C3AED", tags: ["Strategy", "Ops"] },
 ];
 
 export function Team() {
   return (
     <Section id="team">
-      <SectionHeading label="Our Team" title={<>The People Behind <GradientText>Your Growth</GradientText></>} subtitle="Senior specialists who've shipped for startups and enterprises alike." />
+      <SectionHeading label="Our Team" title="The people behind your growth" subtitle="Senior specialists who've shipped for startups and enterprises alike." />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(220px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
         {TEAM.map((m, i) => (
-          <Reveal key={m.name} delay={(i % 3) * 0.08}>
-            <Tilt3D max={12}>
-              <GlassCard style={{ padding: SP.xl, textAlign: "center", height: "100%" }}>
-                <div aria-hidden="true" style={{ width: 80, height: 80, borderRadius: "50%", margin: "0 auto 16px", background: `linear-gradient(135deg, ${m.color}, ${m.color}88)`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 26, color: "#fff", boxShadow: `0 8px 30px ${m.color}40` }}>{m.avatar}</div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px" }}>{m.name}</h3>
-                <p style={{ color: C.textMuted, fontSize: 13, margin: "0 0 14px" }}>{m.role}</p>
-                <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap" }}>
-                  {m.tags.map((t) => <Tag key={t}>{t}</Tag>)}
-                </div>
-              </GlassCard>
-            </Tilt3D>
+          <Reveal key={m.name} delay={(i % 3) * 0.06}>
+            <GlassCard style={{ padding: SP.xl, textAlign: "center", height: "100%" }}>
+              <div aria-hidden="true" style={{ width: 72, height: 72, borderRadius: "50%", margin: "0 auto 16px", background: m.color, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 24, color: "#fff" }}>{m.avatar}</div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px", color: C.text }}>{m.name}</h3>
+              <p style={{ color: C.textMuted, fontSize: 13, margin: "0 0 14px" }}>{m.role}</p>
+              <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap" }}>
+                {m.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+              </div>
+            </GlassCard>
           </Reveal>
         ))}
       </div>
@@ -124,17 +122,15 @@ const STEPS = [
 export function Process() {
   return (
     <Section id="process" alt>
-      <SectionHeading label="How We Work" title={<>Our <GradientText>Proven Process</GradientText></>} subtitle="A transparent, repeatable system that turns ambition into shipped results." />
-      <ol style={{ listStyle: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"], padding: 0, counterReset: "step" }}>
+      <SectionHeading label="How We Work" title="Our proven process" subtitle="A transparent, repeatable system that turns ambition into shipped results." />
+      <ol style={{ listStyle: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: SP.lg, marginTop: SP["2xl"], padding: 0 }}>
         {STEPS.map((s, i) => (
-          <Reveal as="li" key={s.n} delay={i * 0.08} style={{ position: "relative" }}>
-            <Tilt3D max={9}>
-              <GlassCard style={{ padding: SP.xl, height: "100%" }}>
-                <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1, marginBottom: SP.sm, background: C.gradientText, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>{s.n}</div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px" }}>{s.title}</h3>
-                <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
-              </GlassCard>
-            </Tilt3D>
+          <Reveal as="li" key={s.n} delay={i * 0.06} style={{ position: "relative" }}>
+            <GlassCard style={{ padding: SP.xl, height: "100%" }}>
+              <div style={{ fontSize: 34, fontWeight: 800, lineHeight: 1, marginBottom: SP.sm, color: C.accent }}>{s.n}</div>
+              <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px", color: C.text }}>{s.title}</h3>
+              <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+            </GlassCard>
           </Reveal>
         ))}
       </ol>
@@ -147,12 +143,12 @@ const TECHS = ["React", "Next.js", "TypeScript", "Node.js", "Shopify", "Meta Ads
 
 export function TechStack() {
   return (
-    <section aria-label="Technology stack" style={{ padding: `${SP["4xl"]}px 5vw`, borderTop: `1px solid ${C.border}` }}>
+    <section aria-label="Technology stack" style={{ padding: `clamp(48px, 7vw, ${SP["4xl"]}px) 5vw`, background: C.bg, borderTop: `1px solid ${C.border}` }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        <p style={{ textAlign: "center", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", color: C.textDim, marginBottom: SP.lg }}>Tools we build with</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
+        <p style={{ textAlign: "center", fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textDim, marginBottom: SP.lg, fontWeight: 600 }}>Tools we build with</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
           {TECHS.map((t) => (
-            <span key={t} style={{ padding: "10px 20px", borderRadius: RADIUS.pill, background: C.bgCard, border: `1px solid ${C.border}`, color: C.textMuted, fontSize: 14, fontWeight: 500 }}>{t}</span>
+            <span key={t} style={{ padding: "9px 18px", borderRadius: RADIUS.pill, background: C.surface, border: `1px solid ${C.border}`, color: C.text, fontSize: 14, fontWeight: 500 }}>{t}</span>
           ))}
         </div>
       </div>
@@ -186,14 +182,14 @@ function FaqItem({ item, open, onToggle, id }) {
           style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "20px 4px", background: "none", border: "none", color: C.text, fontSize: 16, fontWeight: 600, cursor: "pointer", textAlign: "left" }}
         >
           {item.q}
-          <span aria-hidden="true" style={{ flexShrink: 0, fontSize: 22, lineHeight: 1, color: C.accent, transform: open ? "rotate(45deg)" : "rotate(0deg)", transition: `transform 0.3s ${EASE.out}` }}>＋</span>
+          <span aria-hidden="true" style={{ flexShrink: 0, fontSize: 22, lineHeight: 1, color: C.accent, transform: open ? "rotate(45deg)" : "rotate(0deg)", transition: `transform 0.25s ${EASE.out}` }}>＋</span>
         </button>
       </h3>
       <div
         id={`faq-panel-${id}`}
         role="region"
         aria-labelledby={`faq-btn-${id}`}
-        style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: `grid-template-rows 0.3s ${EASE.out}` }}
+        style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: `grid-template-rows 0.25s ${EASE.out}` }}
       >
         <div style={{ overflow: "hidden" }}>
           <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.7, margin: 0, padding: "0 4px 20px" }}>{item.a}</p>
@@ -207,7 +203,7 @@ export function FAQ() {
   const [open, setOpen] = useState(0);
   return (
     <Section id="faq">
-      <SectionHeading label="FAQ" title={<>Questions <GradientText>Answered</GradientText></>} />
+      <SectionHeading label="FAQ" title="Questions answered" />
       <div style={{ maxWidth: 760, margin: `${SP["2xl"]}px auto 0` }}>
         {FAQS.map((item, i) => (
           <FaqItem key={i} id={i} item={item} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
@@ -232,10 +228,10 @@ function validate(values) {
 
 const fieldStyle = (hasError) => ({
   width: "100%",
-  padding: "13px 16px",
+  padding: "12px 14px",
   borderRadius: RADIUS.sm,
-  background: "rgba(255,255,255,0.04)",
-  border: `1px solid ${hasError ? "#F87171" : C.border}`,
+  background: C.surface,
+  border: `1px solid ${hasError ? "#DC2626" : C.border}`,
   color: C.text,
   fontSize: 15,
   fontFamily: "inherit",
@@ -246,7 +242,7 @@ const fieldStyle = (hasError) => ({
 function Field({ label, name, type = "text", textarea, optional, values, errors, onChange }) {
   return (
     <label style={{ display: "block", textAlign: "left" }}>
-      <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 6 }}>
+      <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>
         {label}{optional && <span style={{ color: C.textDim, fontWeight: 400 }}> (optional)</span>}
       </span>
       {textarea ? (
@@ -254,7 +250,7 @@ function Field({ label, name, type = "text", textarea, optional, values, errors,
       ) : (
         <input name={name} type={type} value={values[name]} onChange={onChange} aria-invalid={!!errors[name]} aria-describedby={errors[name] ? `${name}-err` : undefined} style={fieldStyle(errors[name])} />
       )}
-      {errors[name] && <span id={`${name}-err`} role="alert" style={{ display: "block", color: "#F87171", fontSize: 12, marginTop: 6 }}>{errors[name]}</span>}
+      {errors[name] && <span id={`${name}-err`} role="alert" style={{ display: "block", color: "#DC2626", fontSize: 12, marginTop: 6 }}>{errors[name]}</span>}
     </label>
   );
 }
@@ -283,10 +279,10 @@ export function Contact() {
   const fieldProps = { values, errors, onChange };
 
   return (
-    <Section id="contact">
+    <Section id="contact" alt>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(300px,100%),1fr))", gap: SP["3xl"], alignItems: "start" }}>
         <Reveal>
-          <SectionHeading align="left" label="Get in Touch" title={<>Ready to Build <GradientText>Something Great?</GradientText></>} subtitle="Tell us about your project and we'll get back to you within two business days." />
+          <SectionHeading align="left" label="Get in Touch" title="Ready to build something great?" subtitle="Tell us about your project and we'll get back to you within two business days." />
           <div style={{ marginTop: SP.lg, display: "grid", gap: SP.sm }}>
             {[["✉️", "hello@dcode.studio"], ["📞", "+91 98765 43210"], ["📍", "Bengaluru, India"]].map(([icon, text]) => (
               <div key={text} style={{ display: "flex", alignItems: "center", gap: 12, color: C.textMuted, fontSize: 15 }}>
@@ -296,12 +292,12 @@ export function Contact() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.1}>
+        <Reveal delay={0.08}>
           <GlassCard hover={false} style={{ padding: "clamp(24px, 4vw, 36px)" }}>
             {submitted ? (
               <div role="status" style={{ textAlign: "center", padding: "32px 8px" }}>
-                <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 8px" }}>Thanks — message received!</h3>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
+                <h3 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 8px", color: C.text }}>Thanks — message received!</h3>
                 <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>We'll be in touch shortly. In the meantime, feel free to explore our work.</p>
                 <MagneticBtn onClick={() => setSubmitted(false)}>Send another</MagneticBtn>
               </div>
@@ -311,7 +307,7 @@ export function Contact() {
                 <Field label="Email" name="email" type="email" {...fieldProps} />
                 <Field label="Company" name="company" optional {...fieldProps} />
                 <Field label="Project details" name="message" textarea {...fieldProps} />
-                <MagneticBtn primary type="submit" style={{ width: "100%", marginTop: 4 }}>Send Message →</MagneticBtn>
+                <MagneticBtn primary type="submit" style={{ width: "100%", marginTop: 4 }}>Send message</MagneticBtn>
               </form>
             )}
           </GlassCard>
@@ -330,12 +326,13 @@ const FOOTER_LINKS = {
 
 export function Footer() {
   return (
-    <footer style={{ borderTop: `1px solid ${C.border}`, padding: `${SP["3xl"]}px 5vw ${SP.xl}px`, background: C.bgAlt }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+    <footer style={{ borderTop: `1px solid ${C.border}`, padding: `${SP["3xl"]}px 5vw ${SP.xl}px`, background: C.surface }}>
+      <div style={{ maxWidth: 1160, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "minmax(220px,1.5fr) repeat(3, minmax(120px,1fr))", gap: SP["2xl"], paddingBottom: SP["2xl"] }} className="footer-grid">
           <div>
-            <div style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em", marginBottom: 12 }}>
-              <GradientText>D-Code</GradientText> Studio
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <span aria-hidden="true" style={{ width: 26, height: 26, borderRadius: 7, background: C.accent, color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800 }}>D</span>
+              <span style={{ fontWeight: 700, fontSize: 17, color: C.text }}>D-Code Studio</span>
             </div>
             <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.7, maxWidth: 280, margin: 0 }}>
               Premium websites, performance marketing, and AI automation for ambitious brands.
@@ -343,11 +340,11 @@ export function Footer() {
           </div>
           {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
             <nav key={heading} aria-label={heading}>
-              <h4 style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: C.text, margin: "0 0 14px" }}>{heading}</h4>
+              <h4 style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: C.text, margin: "0 0 14px" }}>{heading}</h4>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
                 {links.map((l) => (
                   <li key={l}>
-                    <a href={`#${l.toLowerCase().replace(/ /g, "-")}`} style={{ color: C.textMuted, fontSize: 14, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = C.text)} onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}>{l}</a>
+                    <a href={`#${l.toLowerCase().replace(/ /g, "-")}`} style={{ color: C.textMuted, fontSize: 14, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = C.accent)} onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}>{l}</a>
                   </li>
                 ))}
               </ul>

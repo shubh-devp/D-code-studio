@@ -1,7 +1,33 @@
 import { useState, useEffect, useCallback } from "react";
 import { C, EASE } from "../constants/theme";
-import { GradientText, MagneticBtn } from "./Primitives";
+import { MagneticBtn } from "./Primitives";
 import { useScrollLock } from "../hooks/useUiHooks";
+
+function Logo({ color = C.text }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, color }}>
+      <span
+        aria-hidden="true"
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 8,
+          background: C.gradient,
+          color: "#fff",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 15,
+          fontWeight: 800,
+          boxShadow: "0 4px 14px rgba(124,58,237,0.4)",
+        }}
+      >
+        D
+      </span>
+      <span style={{ fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>D-Code Studio</span>
+    </span>
+  );
+}
 
 const LINKS = [
   { label: "Services", id: "services" },
@@ -65,32 +91,29 @@ export function Nav() {
           right: 0,
           zIndex: 100,
           padding: "0 5vw",
-          height: 68,
+          height: 64,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: scrolled ? "rgba(6,8,16,0.82)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px) saturate(140%)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px) saturate(140%)" : "none",
+          background: scrolled ? "rgba(11,16,32,0.72)" : "transparent",
+          backdropFilter: scrolled ? "blur(18px) saturate(160%)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(18px) saturate(160%)" : "none",
           borderBottom: `1px solid ${scrolled ? C.border : "transparent"}`,
-          transition: `background 0.4s ${EASE.out}, border-color 0.4s ${EASE.out}, backdrop-filter 0.4s ${EASE.out}`,
+          transition: `background 0.3s ${EASE.out}, border-color 0.3s ${EASE.out}`,
         }}
       >
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label="D-Code Studio, back to top"
           style={{
-            fontWeight: 800,
-            fontSize: 22,
-            letterSpacing: "-0.02em",
+            fontSize: 17,
             cursor: "pointer",
             background: "none",
             border: "none",
-            color: C.text,
             padding: 0,
           }}
         >
-          <GradientText>D-Code</GradientText> Studio
+          <Logo />
         </button>
 
         <div style={{ display: "flex", gap: 32, alignItems: "center" }} className="desktop-nav">
@@ -164,11 +187,11 @@ export function Nav() {
         style={{
           position: "fixed",
           inset: 0,
-          top: 68,
+          top: 64,
           zIndex: 99,
-          background: "rgba(6,8,16,0.97)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          background: "rgba(11,16,32,0.97)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
           padding: "32px 6vw",
           display: "flex",
           flexDirection: "column",
@@ -233,7 +256,7 @@ export function ScrollProgress() {
   }, []);
   return (
     <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, height: 3, pointerEvents: "none" }} aria-hidden="true">
-      <div style={{ height: "100%", width: `${progress}%`, background: C.gradient, transition: "width 0.1s linear" }} />
+      <div style={{ height: "100%", width: `${progress}%`, background: C.accent, transition: "width 0.1s linear" }} />
     </div>
   );
 }
