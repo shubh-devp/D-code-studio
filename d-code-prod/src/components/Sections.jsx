@@ -1,189 +1,82 @@
-import React, { useState } from "react";
-import { C } from "../constants/theme";
+import { useState } from "react";
+import { C, SP, T, RADIUS } from "../constants/theme";
 import { useInView, useCounter } from "../hooks/useUiHooks";
-import { FadeUp, GradientText, SectionLabel, GlassCard } from "./Primitives";
+import { Reveal, GradientText, SectionHeading, GlassCard, Section, Tag, Tilt3D } from "./Primitives";
 
-/* ─── Stats ──────────────────────────────────────────────── */
+function StatItem({ value, suffix, label, sub, inView, delay }) {
+  const count = useCounter(value, inView);
+  return (
+    <Reveal delay={delay}>
+      <div style={{ fontWeight: 800, fontSize: "clamp(2.4rem, 5vw, 3.5rem)", letterSpacing: "-0.03em", lineHeight: 1 }}>
+        <GradientText>{count}{suffix}</GradientText>
+      </div>
+      <div style={{ fontWeight: 600, fontSize: 16, color: C.text, margin: "8px 0 4px" }}>{label}</div>
+      <div style={{ fontSize: 13, color: C.textMuted }}>{sub}</div>
+    </Reveal>
+  );
+}
+
 export function Stats() {
   const [ref, inView] = useInView();
   const stats = [
     { value: 200, suffix: "+", label: "Projects Delivered", sub: "Across 12 countries" },
-    { value: 98,  suffix: "%", label: "Client Retention",   sub: "Long-term partnerships" },
-    { value: 50,  suffix: "+", label: "Expert Team Members",sub: "Specialists & creatives" },
-    { value: 8,   suffix: "yr",label: "Industry Experience",sub: "Founded 2016" },
+    { value: 98, suffix: "%", label: "Client Retention", sub: "Long-term partnerships" },
+    { value: 50, suffix: "+", label: "Expert Team Members", sub: "Specialists & creatives" },
+    { value: 8, suffix: "yr", label: "Industry Experience", sub: "Founded 2016" },
   ];
   return (
-    <section
-      ref={ref}
-      aria-label="Company statistics"
-      style={{
-        padding: "clamp(48px, 8vw, 80px) 6vw",
-        borderTop: `1px solid ${C.border}`,
-        borderBottom: `1px solid ${C.border}`,
-      }}
-    >
-      <div style={{
-        maxWidth: 1200, margin: "0 auto",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-        gap: "clamp(24px, 5vw, 48px)",
-        textAlign: "center",
-      }}>
+    <section ref={ref} aria-label="Key metrics" style={{ padding: `${SP["4xl"]}px 5vw`, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: SP["2xl"], textAlign: "center" }}>
         {stats.map((s, i) => (
-          <StatItem key={s.label} stat={s} index={i} inView={inView} />
+          <StatItem key={s.label} {...s} inView={inView} delay={i * 0.1} />
         ))}
       </div>
     </section>
   );
 }
 
-function StatItem({ stat, index, inView }) {
-  const count = useCounter(stat.value, inView);
-  return (
-    <FadeUp delay={index * 0.1}>
-      <div
-        aria-label={`${stat.value}${stat.suffix} ${stat.label}`}
-        style={{ fontWeight: 800, fontSize: "clamp(2.4rem, 5vw, 3.5rem)", letterSpacing: "-0.03em", lineHeight: 1 }}
-      >
-        <GradientText>{count}{stat.suffix}</GradientText>
-      </div>
-      <div style={{ fontWeight: 600, fontSize: 15, color: C.text, margin: "8px 0 4px" }}>{stat.label}</div>
-      <div style={{ fontSize: 13, color: C.textMuted }}>{stat.sub}</div>
-    </FadeUp>
-  );
-}
-
-/* ─── Services ───────────────────────────────────────────── */
 const SERVICES = [
-  {
-    icon: "📱",
-    title: "Meta Ads Services",
-    desc: "Performance-driven Meta advertising that fills your pipeline. Precision targeting, creative testing, and ROAS-focused campaigns.",
-    tags: ["Facebook Ads", "Instagram Ads", "Retargeting"],
-  },
-  {
-    icon: "🌐",
-    title: "Website Development",
-    desc: "High-converting, blazing-fast websites built with modern stacks. From landing pages to complex web applications.",
-    tags: ["React / Next.js", "WordPress", "E-commerce"],
-  },
-  {
-    icon: "🛍",
-    title: "Shopify Development",
-    desc: "Custom Shopify stores that convert browsers into buyers. Bespoke themes, apps, and store optimisation.",
-    tags: ["Custom Themes", "Shopify Plus", "CRO"],
-  },
-  {
-    icon: "⚡",
-    title: "AI Automation",
-    desc: "Automate repetitive workflows and unlock scale. Custom GPT agents, n8n pipelines, and intelligent business systems.",
-    tags: ["GPT Agents", "n8n Workflows", "CRM"],
-  },
+  { icon: "📱", title: "Meta Ads Services", desc: "Performance-driven Meta advertising that fills your pipeline. Precision targeting, creative testing, and ROAS-focused campaigns.", tags: ["Facebook Ads", "Instagram Ads", "Retargeting"] },
+  { icon: "🌐", title: "Website Development", desc: "High-converting, blazing-fast websites built with modern stacks. From landing pages to complex web applications.", tags: ["React / Next.js", "WordPress", "E-commerce"] },
+  { icon: "🛍", title: "Shopify Development", desc: "Custom Shopify stores that convert browsers into buyers. Bespoke themes, apps, and store optimisation.", tags: ["Custom Themes", "Shopify Plus", "CRO"] },
+  { icon: "⚡", title: "AI Automation", desc: "Automate repetitive workflows and unlock scale. Custom GPT agents, n8n pipelines, and intelligent business systems.", tags: ["GPT Agents", "n8n Workflows", "CRM"] },
 ];
 
 export function Services() {
   return (
-    <section id="services" aria-label="Our services" style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>What We Do</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 16px",
-          }}>
-            Services Built for <GradientText>Ambitious Brands</GradientText>
-          </h2>
-          <p style={{
-            textAlign: "center", color: C.textMuted,
-            maxWidth: 560, margin: "0 auto", lineHeight: 1.7,
-            fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-          }}>
-            From your first ad to your tenth product line — we build the digital infrastructure that scales.
-          </p>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-          gap: 24, marginTop: 48,
-        }}>
-          {SERVICES.map((s, i) => (
-            <FadeUp key={s.title} delay={i * 0.07}>
-              <GlassCard style={{ padding: "clamp(20px, 4vw, 32px)", height: "100%" }}>
-                <div style={{ fontSize: 34, marginBottom: 16 }} role="img" aria-label={s.title}>
-                  {s.icon}
-                </div>
-                <h3 style={{ fontSize: 19, fontWeight: 700, margin: "0 0 12px", color: C.text }}>
-                  {s.title}
-                </h3>
-                <p style={{ color: C.textMuted, lineHeight: 1.7, marginBottom: 20, fontSize: 14 }}>
-                  {s.desc}
-                </p>
+    <Section id="services">
+      <SectionHeading
+        label="What We Do"
+        title={<>Services Built for <GradientText>Ambitious Brands</GradientText></>}
+        subtitle="Full-stack growth — from the first ad impression to a polished product experience."
+      />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
+        {SERVICES.map((s, i) => (
+          <Reveal key={s.title} delay={i * 0.07}>
+            <Tilt3D>
+              <GlassCard style={{ padding: SP.xl, height: "100%" }}>
+                <div style={{ fontSize: 34, marginBottom: SP.md, lineHeight: 1 }} aria-hidden="true">{s.icon}</div>
+                <h3 style={{ fontSize: 20, fontWeight: 700, margin: `0 0 ${SP.sm}px`, color: C.text }}>{s.title}</h3>
+                <p style={{ color: C.textMuted, lineHeight: 1.7, marginBottom: SP.lg, fontSize: 15 }}>{s.desc}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {s.tags.map((t) => (
-                    <span key={t} style={{
-                      padding: "4px 12px", borderRadius: 50,
-                      fontSize: 12, fontWeight: 600,
-                      background: "rgba(139,92,246,0.1)",
-                      color: "#C4B5FD",
-                      border: "1px solid rgba(139,92,246,0.2)",
-                    }}>
-                      {t}
-                    </span>
-                  ))}
+                  {s.tags.map((t) => <Tag key={t}>{t}</Tag>)}
                 </div>
               </GlassCard>
-            </FadeUp>
-          ))}
-        </div>
+            </Tilt3D>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
-/* ─── Portfolio ───────────────────────────────────────────── */
 const PROJECTS = [
-  {
-    cat: "Website",
-    client: "Luxe Realty",
-    title: "Premium Real Estate Portal",
-    color: "#8B5CF6",
-    result: "+340% leads",
-    metric: "Lead Gen",
-    desc: "End-to-end real estate portal with 3D property tours, advanced search filters, and a conversion-optimised lead funnel.",
-    link: "#",
-  },
-  {
-    cat: "E-commerce",
-    client: "Bloom & Co",
-    title: "Direct-to-Consumer Brand Scale",
-    color: "#06B6D4",
-    result: "₹2Cr revenue",
-    metric: "Revenue",
-    desc: "Custom Shopify store with subscription model, personalised UX, and Meta ad funnels driving consistent ₹2Cr+ monthly.",
-    link: "#",
-  },
-  {
-    cat: "AI Automation",
-    client: "TechServe CRM",
-    title: "Full CRM Automation Suite",
-    color: "#10B981",
-    result: "80% time saved",
-    metric: "Efficiency",
-    desc: "AI lead scoring, automated nurture sequences, and n8n pipelines replaced a 4-person ops team entirely.",
-    link: "#",
-  },
-  {
-    cat: "Website",
-    client: "EduPrime",
-    title: "EdTech Landing & Funnel",
-    color: "#F59E0B",
-    result: "6× ROAS",
-    metric: "ROAS",
-    desc: "Conversion-first landing page with A/B testing infrastructure, connected to Meta Ads, driving 6× return on ad spend.",
-    link: "#",
-  },
+  { cat: "Website", title: "Luxe Realty", color: "#8B5CF6", result: "+340% leads", desc: "Premium real estate portal with immersive 3D property tours." },
+  { cat: "E-commerce", title: "Bloom & Co", color: "#06B6D4", result: "₹2Cr revenue", desc: "Direct-to-consumer Shopify brand scaling rapidly across India." },
+  { cat: "AI Automation", title: "TechServe CRM", color: "#10B981", result: "80% time saved", desc: "Full CRM automation with AI lead scoring and routing." },
+  { cat: "Website", title: "Northwind SaaS", color: "#F59E0B", result: "2.1s → 0.6s", desc: "Marketing site rebuild with a 3.5× faster load time." },
+  { cat: "E-commerce", title: "Vanta Apparel", color: "#EC4899", result: "+62% AOV", desc: "Headless storefront with personalised product bundles." },
+  { cat: "AI Automation", title: "EduPrime Bot", color: "#06B6D4", result: "24/7 support", desc: "GPT support agent resolving 70% of tickets autonomously." },
 ];
 
 export function Portfolio() {
@@ -192,229 +85,106 @@ export function Portfolio() {
   const filtered = active === "All" ? PROJECTS : PROJECTS.filter((p) => p.cat === active);
 
   return (
-    <section id="portfolio" aria-label="Portfolio" style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>Our Work</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 16px",
-          }}>
-            Projects That <GradientText>Moved the Needle</GradientText>
-          </h2>
-
-          {/* Filter tabs */}
-          <div
-            role="tablist"
-            aria-label="Filter projects by category"
+    <Section id="portfolio">
+      <SectionHeading
+        label="Our Work"
+        title={<>Projects That <GradientText>Moved the Needle</GradientText></>}
+      />
+      <div role="tablist" aria-label="Filter projects" style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", margin: `${SP.xl}px 0 ${SP["2xl"]}px` }}>
+        {cats.map((c) => (
+          <button
+            key={c}
+            role="tab"
+            aria-selected={active === c}
+            onClick={() => setActive(c)}
             style={{
-              display: "flex", justifyContent: "center",
-              gap: "clamp(8px, 2vw, 12px)", flexWrap: "wrap",
-              margin: "32px 0 clamp(32px, 5vw, 56px)",
+              padding: "8px 20px",
+              borderRadius: RADIUS.pill,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              background: active === c ? C.gradient : "transparent",
+              border: `1px solid ${active === c ? "transparent" : C.border}`,
+              color: active === c ? "#fff" : C.textMuted,
+              transition: "all 0.25s ease",
             }}
           >
-            {cats.map((c) => (
-              <button
-                key={c}
-                role="tab"
-                aria-selected={active === c}
-                onClick={() => setActive(c)}
-                style={{
-                  padding: "8px clamp(14px, 3vw, 20px)",
-                  borderRadius: 50, fontSize: 13, fontWeight: 600, cursor: "pointer",
-                  background: active === c ? C.gradient : "transparent",
-                  border: `1px solid ${active === c ? "transparent" : C.border}`,
-                  color: active === c ? "#fff" : C.textMuted,
-                  transition: "all 0.25s ease",
-                }}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
-          gap: 24,
-        }}>
-          {filtered.map((p, i) => (
-            <FadeUp key={p.client} delay={i * 0.08}>
-              <ProjectCard project={p} />
-            </FadeUp>
-          ))}
-        </div>
+            {c}
+          </button>
+        ))}
       </div>
-    </section>
-  );
-}
-
-function ProjectCard({ project: p }) {
-  return (
-    <GlassCard style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-      {/* Color block header */}
-      <div style={{
-        height: 180,
-        background: `radial-gradient(ellipse at 30% 30%, ${p.color}30, transparent 70%),
-          linear-gradient(135deg, ${p.color}15, ${C.bg})`,
-        position: "relative",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexShrink: 0,
-      }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{
-            padding: "10px 22px", borderRadius: 50,
-            background: `${p.color}25`, border: `1px solid ${p.color}50`,
-            color: p.color, fontWeight: 800, fontSize: 22, display: "inline-block",
-          }}>
-            {p.result}
-          </div>
-          <div style={{ fontSize: 12, color: C.textMuted, marginTop: 8 }}>{p.metric}</div>
-        </div>
-        <span style={{
-          position: "absolute", top: 14, left: 16,
-          padding: "4px 12px", borderRadius: 50,
-          background: "rgba(255,255,255,0.07)",
-          border: `1px solid ${C.border}`,
-          fontSize: 11, fontWeight: 600, color: C.textMuted,
-          letterSpacing: "0.05em",
-        }}>
-          {p.cat}
-        </span>
-      </div>
-
-      {/* Card body */}
-      <div style={{ padding: "clamp(16px, 4vw, 24px)", flex: 1, display: "flex", flexDirection: "column" }}>
-        <div style={{ fontSize: 12, color: C.textMuted, marginBottom: 6, fontWeight: 600, letterSpacing: "0.05em" }}>
-          {p.client}
-        </div>
-        <h3 style={{ fontWeight: 700, fontSize: 18, color: C.text, margin: "0 0 10px" }}>
-          {p.title}
-        </h3>
-        <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, flex: 1 }}>
-          {p.desc}
-        </p>
-        {p.link && p.link !== "#" && (
-          <a
-            href={p.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`View case study for ${p.client}`}
-            style={{
-              marginTop: 16, display: "inline-flex", alignItems: "center",
-              gap: 6, fontSize: 13, fontWeight: 600, color: "#C4B5FD",
-              textDecoration: "none",
-            }}
-          >
-            View Case Study →
-          </a>
-        )}
-      </div>
-    </GlassCard>
-  );
-}
-
-/* ─── CaseStudies ─────────────────────────────────────────── */
-export function CaseStudies() {
-  const cases = [
-    {
-      brand: "EduPrime",
-      category: "Digital Marketing",
-      headline: "From ₹50K ad spend to ₹3L revenue monthly",
-      metrics: [
-        { label: "ROAS", value: "6×" },
-        { label: "CPL Drop", value: "−42%" },
-        { label: "Conv. Rate", value: "8.4%" },
-      ],
-      story: "EduPrime needed to scale paid acquisition without ballooning costs. We rebuilt their funnel from the ad creative down to the thank-you page — cutting cost-per-lead by 42% while growing volume 3×.",
-      color: "#F59E0B",
-    },
-  ];
-
-  return (
-    <section
-      id="case-studies"
-      aria-label="Case studies"
-      style={{
-        padding: "clamp(64px, 10vw, 120px) 6vw",
-        background: "rgba(255,255,255,0.01)",
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>Deep Dives</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, marginBottom: 48,
-          }}>
-            <GradientText>Case Studies</GradientText>
-          </h2>
-        </FadeUp>
-
-        {cases.map((c, i) => (
-          <FadeUp key={i}>
-            <GlassCard style={{ padding: "clamp(24px, 5vw, 48px)" }} hover={false}>
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
-                gap: "clamp(24px, 5vw, 48px)",
-                alignItems: "center",
-              }}>
-                {/* Left: story */}
-                <div>
-                  <span style={{
-                    display: "inline-block",
-                    padding: "4px 12px", borderRadius: 50,
-                    background: `${c.color}15`,
-                    border: `1px solid ${c.color}40`,
-                    color: c.color, fontSize: 12, fontWeight: 600,
-                    marginBottom: 16, letterSpacing: "0.06em",
-                  }}>
-                    {c.category}
-                  </span>
-                  <h3 style={{
-                    fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
-                    fontWeight: 700, color: C.text, marginBottom: 16,
-                  }}>
-                    {c.headline}
-                  </h3>
-                  <p style={{ color: C.textMuted, lineHeight: 1.7, fontSize: 14 }}>{c.story}</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: SP.lg }}>
+        {filtered.map((p, i) => (
+          <Reveal key={p.title} delay={i * 0.06}>
+            <Tilt3D max={8}>
+              <GlassCard style={{ overflow: "hidden", height: "100%" }}>
+                <div style={{ height: 200, background: `radial-gradient(ellipse at 30% 30%, ${p.color}30, transparent 70%), linear-gradient(135deg, ${p.color}15, ${C.bg})`, position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ padding: "8px 18px", borderRadius: RADIUS.pill, background: `${p.color}25`, border: `1px solid ${p.color}50`, color: p.color, fontWeight: 700, fontSize: 22 }}>{p.result}</div>
+                  <span style={{ position: "absolute", top: 14, left: 14, fontSize: 12, fontWeight: 600, color: C.textMuted, background: "rgba(0,0,0,0.35)", padding: "4px 10px", borderRadius: RADIUS.pill }}>{p.cat}</span>
                 </div>
+                <div style={{ padding: SP.lg }}>
+                  <h3 style={{ fontWeight: 700, fontSize: 20, color: C.text }}>{p.title}</h3>
+                  <p style={{ color: C.textMuted, fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>{p.desc}</p>
+                </div>
+              </GlassCard>
+            </Tilt3D>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
+  );
+}
 
-                {/* Right: metrics */}
-                <div style={{
-                  display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "flex-start",
-                }}>
+const CASES = [
+  {
+    brand: "EduPrime",
+    category: "Performance Marketing",
+    headline: "From ₹50K ad spend to ₹3L revenue monthly",
+    story: "EduPrime needed to scale paid acquisition without blowing up CAC. We rebuilt their funnel, creative system, and attribution — then scaled spend 6× while holding ROAS.",
+    metrics: [{ label: "ROAS", value: "6×" }, { label: "CAC", value: "-38%" }, { label: "Leads/mo", value: "1,200+" }],
+    color: "#F59E0B",
+  },
+  {
+    brand: "Bloom & Co",
+    category: "E-commerce",
+    headline: "₹2Cr in first-year DTC revenue",
+    story: "A custom Shopify Plus build plus a retention-first email/SMS engine took Bloom & Co from launch to eight figures in twelve months.",
+    metrics: [{ label: "Revenue", value: "₹2Cr" }, { label: "Repeat rate", value: "41%" }, { label: "Conv. rate", value: "3.8%" }],
+    color: "#06B6D4",
+  },
+];
+
+export function CaseStudies() {
+  return (
+    <Section id="case-studies" alt>
+      <SectionHeading label="Proof" title={<>Real <GradientText>Case Studies</GradientText></>} />
+      <div style={{ display: "grid", gap: SP.lg, marginTop: SP["2xl"] }}>
+        {CASES.map((c) => (
+          <Reveal key={c.brand}>
+            <GlassCard hover={false} style={{ padding: "clamp(28px, 5vw, 48px)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.4fr) minmax(0,1fr)", gap: SP["2xl"], alignItems: "center" }} className="case-grid">
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: SP.md }}>
+                    <span style={{ fontWeight: 700, color: c.color }}>{c.brand}</span>
+                    <span style={{ color: C.textDim }}>•</span>
+                    <span style={{ fontSize: 13, color: C.textMuted }}>{c.category}</span>
+                  </div>
+                  <h3 style={{ fontSize: T.h3, fontWeight: 700, lineHeight: 1.3, margin: `0 0 ${SP.sm}px` }}>{c.headline}</h3>
+                  <p style={{ color: C.textMuted, lineHeight: 1.7 }}>{c.story}</p>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: SP.sm }}>
                   {c.metrics.map((m) => (
-                    <div
-                      key={m.label}
-                      aria-label={`${m.label}: ${m.value}`}
-                      style={{
-                        padding: "clamp(16px, 3vw, 24px)",
-                        background: `${c.color}12`,
-                        border: `1px solid ${c.color}30`,
-                        borderRadius: 16, textAlign: "center",
-                        minWidth: 100, flex: "1 1 100px",
-                      }}
-                    >
-                      <div style={{
-                        fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                        fontWeight: 800, color: c.color,
-                      }}>
-                        {m.value}
-                      </div>
-                      <div style={{ fontSize: 12, color: C.textMuted, marginTop: 6 }}>{m.label}</div>
+                    <div key={m.label} style={{ padding: "18px 12px", background: `${c.color}12`, border: `1px solid ${c.color}30`, borderRadius: RADIUS.sm, textAlign: "center" }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: c.color }}>{m.value}</div>
+                      <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4, letterSpacing: "0.02em" }}>{m.label}</div>
                     </div>
                   ))}
                 </div>
               </div>
             </GlassCard>
-          </FadeUp>
+          </Reveal>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }

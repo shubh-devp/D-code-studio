@@ -1,623 +1,158 @@
-import React, { useState, useRef, useEffect } from "react";
-import { C } from "../constants/theme";
-import { FadeUp, GradientText, GlassCard, MagneticBtn, SectionLabel } from "./Primitives";
-import { useInView, useCounter } from "../hooks/useUiHooks";
+import { useState } from "react";
+import { C, SP, RADIUS, EASE } from "../constants/theme";
+import { Reveal, GradientText, GlassCard, MagneticBtn, SectionHeading, Section, Tag, Tilt3D } from "./Primitives";
 
-/* ─── About ──────────────────────────────────────────────────── */
-export function About() {
+/* ------------------------------- Why Us -------------------------------- */
+const WHY = [
+  { icon: "🎯", title: "Outcome-obsessed", desc: "We measure success in your revenue, not our deliverables. Every decision ladders up to growth." },
+  { icon: "⚡", title: "Senior-only team", desc: "No juniors learning on your budget. You work directly with specialists who have shipped at scale." },
+  { icon: "🔍", title: "Radical transparency", desc: "Live dashboards, weekly reporting, and Slack access. You always know exactly where things stand." },
+  { icon: "🚀", title: "Built to scale", desc: "Architecture, ad systems, and automations designed to grow with you — not break at the next level." },
+];
+
+export function WhyUs() {
   return (
-    <section id="about" aria-label="About D-Code Studio" style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>About D-Code Studio</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 16px",
-          }}>
-            Not Just an Agency. <GradientText>A Growth Partner.</GradientText>
-          </h2>
-          <p style={{
-            textAlign: "center", color: C.textMuted, maxWidth: 660,
-            margin: "0 auto 64px", lineHeight: 1.8,
-            fontSize: "clamp(0.95rem, 1.5vw, 1.05rem)",
-          }}>
-            Founded in 2016 in Pune, D-Code Studio was born from a single belief: that great design
-            and smart technology should drive measurable business outcomes — not just look beautiful.
-          </p>
-        </FadeUp>
-
-        {/* Mission / Vision / Values grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
-          gap: 24, marginBottom: 64,
-        }}>
-          {[
-            {
-              icon: "🎯",
-              label: "Our Mission",
-              text: "Empower ambitious brands with digital systems that attract, convert, and retain customers at scale — with transparency, speed, and precision.",
-            },
-            {
-              icon: "🚀",
-              label: "Our Vision",
-              text: "Become South Asia's most trusted full-stack digital growth studio, known for ROI-first thinking and world-class execution.",
-            },
-            {
-              icon: "🤝",
-              label: "Why Clients Trust Us",
-              text: "We embed inside your team, share the same goals, and only win when you win. No retainer-padding. No vanity metrics.",
-            },
-          ].map((item, i) => (
-            <FadeUp key={item.label} delay={i * 0.08}>
-              <GlassCard style={{ padding: "clamp(20px, 4vw, 32px)", height: "100%" }}>
-                <div style={{ fontSize: 32, marginBottom: 14 }} role="img" aria-label={item.label}>
-                  {item.icon}
-                </div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, marginBottom: 10 }}>{item.label}</h3>
-                <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.7 }}>{item.text}</p>
-              </GlassCard>
-            </FadeUp>
-          ))}
-        </div>
-
-        {/* CTA row */}
-        <FadeUp>
-          <div style={{ textAlign: "center" }}>
-            <MagneticBtn
-              primary
-              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-              aria-label="Start a conversation with D-Code Studio"
-            >
+    <Section id="why-choose-us">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: SP["3xl"], alignItems: "center" }}>
+        <Reveal>
+          <SectionHeading
+            align="left"
+            label="Why D-Code"
+            title={<>Not Just an Agency.<br /><GradientText>A Growth Partner.</GradientText></>}
+            subtitle="We embed inside your team and your systems to compound results month over month — transparently, and accountably."
+          />
+          <div style={{ marginTop: SP.lg }}>
+            <MagneticBtn primary onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}>
               Let's Talk Strategy →
             </MagneticBtn>
           </div>
-        </FadeUp>
-      </div>
-    </section>
-  );
-}
-
-/* ─── WhyUs ───────────────────────────────────────────────── */
-export function WhyUs() {
-  const reasons = [
-    { icon: "📊", title: "ROI-First Approach", desc: "Every decision is tied to a revenue metric. We kill vanity projects before they waste your budget." },
-    { icon: "⚡", title: "Rapid Execution", desc: "Avg. 14-day launch for landing pages. Full websites in 4–6 weeks. AI automation in 2 weeks." },
-    { icon: "🔒", title: "Radical Transparency", desc: "Weekly loom updates, shared dashboards, and Slack access to your team — no black boxes." },
-    { icon: "🧠", title: "Full-Stack Expertise", desc: "Design, dev, ads, AI — under one roof. No outsourcing, no handoff friction." },
-    { icon: "📈", title: "Proven Track Record", desc: "200+ projects delivered. ₹15Cr+ in client revenue generated. References available." },
-    { icon: "🌐", title: "Global Experience", desc: "Clients in India, UAE, UK, US, and Australia. We understand cross-market nuance." },
-  ];
-
-  return (
-    <section id="why-choose-us" aria-label="Why choose D-Code Studio" style={{ padding: "clamp(64px, 10vw, 120px) 6vw", background: "rgba(255,255,255,0.01)" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>Why D-Code</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 16px",
-          }}>
-            The Reasons Clients <GradientText>Come Back</GradientText>
-          </h2>
-          <p style={{
-            textAlign: "center", color: C.textMuted, maxWidth: 560, margin: "0 auto 48px",
-            lineHeight: 1.7, fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-          }}>
-            We could list credentials. Instead, here's what we actually do differently.
-          </p>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-          gap: 20,
-        }}>
-          {reasons.map((r, i) => (
-            <FadeUp key={r.title} delay={i * 0.06}>
-              <GlassCard style={{ padding: "clamp(18px, 3.5vw, 28px)" }}>
-                <div style={{ fontSize: 28, marginBottom: 12 }} role="img" aria-label={r.title}>{r.icon}</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 8 }}>{r.title}</h3>
-                <p style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.65 }}>{r.desc}</p>
+        </Reveal>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: SP.md }}>
+          {WHY.map((w, i) => (
+            <Reveal key={w.title} delay={i * 0.08}>
+              <GlassCard style={{ padding: SP.lg, height: "100%" }}>
+                <div style={{ fontSize: 26, marginBottom: SP.sm }} aria-hidden="true">{w.icon}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 6px" }}>{w.title}</h3>
+                <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, margin: 0 }}>{w.desc}</p>
               </GlassCard>
-            </FadeUp>
+            </Reveal>
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
-/* ─── Achievements ────────────────────────────────────────── */
-export function Achievements() {
-  const [ref, inView] = useInView();
-  const achievements = [
-    { value: 15,  suffix: "Cr+", label: "Client Revenue Generated", sub: "₹ across all clients", icon: "💰" },
-    { value: 200, suffix: "+",   label: "Projects Delivered",        sub: "Since 2016",           icon: "🏆" },
-    { value: 12,  suffix: "+",   label: "Industries Served",         sub: "Diverse expertise",    icon: "🌐" },
-    { value: 4,   suffix: "",    label: "Industry Awards",           sub: "Design & performance", icon: "🥇" },
-  ];
-
-  return (
-    <section
-      ref={ref}
-      id="achievements"
-      aria-label="Achievements"
-      style={{
-        padding: "clamp(64px, 10vw, 120px) 6vw",
-        background: `linear-gradient(180deg, transparent 0%, rgba(139,92,246,0.04) 50%, transparent 100%)`,
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>By the Numbers</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 56px",
-          }}>
-            Results That <GradientText>Speak for Themselves</GradientText>
-          </h2>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))",
-          gap: "clamp(16px, 4vw, 32px)",
-        }}>
-          {achievements.map((a, i) => (
-            <AchievementItem key={a.label} item={a} index={i} inView={inView} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AchievementItem({ item, index, inView }) {
-  const count = useCounter(item.value, inView);
-  return (
-    <FadeUp delay={index * 0.1}>
-      <GlassCard style={{ padding: "clamp(20px, 4vw, 36px)", textAlign: "center" }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }} role="img" aria-label={item.label}>{item.icon}</div>
-        <div
-          aria-label={`${item.value}${item.suffix} ${item.label}`}
-          style={{
-            fontWeight: 800, fontSize: "clamp(2rem, 5vw, 3rem)",
-            letterSpacing: "-0.03em", lineHeight: 1,
-          }}
-        >
-          <GradientText>{count}{item.suffix}</GradientText>
-        </div>
-        <div style={{ fontWeight: 600, fontSize: 15, color: C.text, margin: "10px 0 4px" }}>{item.label}</div>
-        <div style={{ fontSize: 12, color: C.textMuted }}>{item.sub}</div>
-      </GlassCard>
-    </FadeUp>
-  );
-}
-
-/* ─── Testimonials ────────────────────────────────────────── */
+/* ----------------------------- Testimonials ---------------------------- */
 const TESTIMONIALS = [
-  {
-    name: "Priya Mehta",
-    role: "Founder, Bloom & Co",
-    text: "D-Code rebuilt our Shopify store and ran our Meta ads. Within 3 months we crossed ₹2Cr monthly revenue — something we'd been chasing for 2 years.",
-    stars: 5,
-  },
-  {
-    name: "Rohan Kapoor",
-    role: "CEO, TechServe Solutions",
-    text: "The AI automation suite they built replaced our entire lead ops team. We're now closing deals faster with zero manual follow-up.",
-    stars: 5,
-  },
-  {
-    name: "Anika Sharma",
-    role: "Marketing Director, EduPrime",
-    text: "6× ROAS in 90 days. The team is incredibly data-driven — they killed underperforming creatives fast and scaled winners ruthlessly.",
-    stars: 5,
-  },
+  { quote: "D-Code rebuilt our funnel and tripled qualified leads in 90 days. They operate like an in-house team that actually ships.", name: "Aarav Mehta", role: "Founder, Luxe Realty", avatar: "AM", color: "#8B5CF6" },
+  { quote: "Our Shopify store went from a side project to ₹2Cr in year one. The CRO work alone paid for the engagement many times over.", name: "Priya Nair", role: "CEO, Bloom & Co", avatar: "PN", color: "#06B6D4" },
+  { quote: "The AI automation they built handles 70% of our support tickets. My team finally focuses on customers instead of busywork.", name: "Rohan Gupta", role: "COO, TechServe", avatar: "RG", color: "#10B981" },
+  { quote: "ROAS went from 1.8× to 6× while we scaled spend 6×. I've worked with five agencies — none came close to this.", name: "Sara Khan", role: "CMO, EduPrime", avatar: "SK", color: "#F59E0B" },
+  { quote: "Site load dropped from 2.1s to 0.6s and conversions jumped 28%. Fast, communicative, and genuinely strategic.", name: "Daniel Brooks", role: "Head of Growth, Northwind", avatar: "DB", color: "#EC4899" },
+  { quote: "They treated our brand like their own. The new storefront lifted AOV 62% and our team actually enjoys managing it.", name: "Meera Iyer", role: "Director, Vanta Apparel", avatar: "MI", color: "#06B6D4" },
 ];
 
 export function Testimonials() {
   return (
-    <section
-      id="testimonials"
-      aria-label="Client testimonials"
-      style={{ padding: "clamp(64px, 10vw, 120px) 6vw", background: "rgba(255,255,255,0.01)" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>Client Love</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 48px",
-          }}>
-            What Our <GradientText>Clients Say</GradientText>
-          </h2>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-          gap: 24,
-        }}>
-          {TESTIMONIALS.map((t, i) => (
-            <FadeUp key={t.name} delay={i * 0.1}>
-              <GlassCard style={{ padding: "clamp(20px, 4vw, 32px)", height: "100%", display: "flex", flexDirection: "column" }}>
-                <div aria-label={`${t.stars} stars`} style={{ color: "#FBBF24", fontSize: 18, marginBottom: 16, letterSpacing: 2 }}>
-                  {"★".repeat(t.stars)}
-                </div>
-                <p style={{
-                  color: C.text, fontSize: 15, lineHeight: 1.75,
-                  fontStyle: "italic", flex: 1, marginBottom: 24,
-                }}>
-                  "{t.text}"
-                </p>
-                <div>
-                  <div style={{ fontWeight: 700, color: C.text, fontSize: 14 }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: C.textMuted, marginTop: 2 }}>{t.role}</div>
-                </div>
-              </GlassCard>
-            </FadeUp>
-          ))}
-        </div>
+    <Section id="testimonials" alt>
+      <SectionHeading label="Testimonials" title={<>What Our <GradientText>Clients Say</GradientText></>} subtitle="A few words from the founders and operators we've partnered with." />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
+        {TESTIMONIALS.map((t, i) => (
+          <Reveal key={t.name} delay={(i % 3) * 0.08}>
+            <GlassCard style={{ padding: SP.xl, height: "100%", display: "flex", flexDirection: "column" }}>
+              <div style={{ color: "#FBBF24", fontSize: 16, letterSpacing: 2, marginBottom: SP.md }} aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote style={{ color: C.text, fontSize: 15, lineHeight: 1.7, margin: 0, flex: 1 }}>"{t.quote}"</blockquote>
+              <figcaption style={{ display: "flex", alignItems: "center", gap: 12, marginTop: SP.lg }}>
+                <span aria-hidden="true" style={{ width: 44, height: 44, borderRadius: "50%", background: `linear-gradient(135deg, ${t.color}, ${t.color}99)`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 15, color: "#fff" }}>{t.avatar}</span>
+                <span>
+                  <span style={{ display: "block", fontWeight: 600, fontSize: 14, color: C.text }}>{t.name}</span>
+                  <span style={{ display: "block", fontSize: 13, color: C.textMuted }}>{t.role}</span>
+                </span>
+              </figcaption>
+            </GlassCard>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
-/* ─── Team ────────────────────────────────────────────────── */
+/* -------------------------------- Team --------------------------------- */
 const TEAM = [
-  {
-    name: "Darshan Patel",
-    role: "Founder & CEO",
-    bio: "8+ years in digital strategy. Ex-agency director who built D-Code to prove that great work and real results can coexist.",
-    initials: "DP",
-    color: "#8B5CF6",
-    socials: { linkedin: "#", twitter: "#" },
-  },
-  {
-    name: "Sneha Joshi",
-    role: "Head of Growth",
-    bio: "Performance marketing specialist. Managed ₹3Cr+ in Meta & Google ad spend. Obsessed with ROAS and funnel architecture.",
-    initials: "SJ",
-    color: "#06B6D4",
-    socials: { linkedin: "#" },
-  },
-  {
-    name: "Arjun Nair",
-    role: "Lead Developer",
-    bio: "Full-stack engineer with 6 years in React, Next.js, and Shopify. Builds fast, accessible, and conversion-optimised web products.",
-    initials: "AN",
-    color: "#10B981",
-    socials: { linkedin: "#", github: "#" },
-  },
-  {
-    name: "Riya Desai",
-    role: "AI & Automation Lead",
-    bio: "Former data scientist turned AI solutions architect. Designs n8n pipelines and GPT-powered workflows that actually ship.",
-    initials: "RD",
-    color: "#F59E0B",
-    socials: { linkedin: "#" },
-  },
+  { name: "Arjun Kapoor", role: "Founder & Strategy", avatar: "AK", color: "#8B5CF6", tags: ["Growth", "Vision"] },
+  { name: "Nisha Rao", role: "Head of Design", avatar: "NR", color: "#06B6D4", tags: ["UX", "Brand"] },
+  { name: "Vikram Shah", role: "Lead Engineer", avatar: "VS", color: "#10B981", tags: ["React", "Architecture"] },
+  { name: "Tara Singh", role: "Performance Lead", avatar: "TS", color: "#F59E0B", tags: ["Meta Ads", "Analytics"] },
+  { name: "Karan Patel", role: "Automation Engineer", avatar: "KP", color: "#EC4899", tags: ["AI", "n8n"] },
+  { name: "Ananya Bose", role: "Client Success", avatar: "AB", color: "#A78BFA", tags: ["Strategy", "Ops"] },
 ];
 
 export function Team() {
   return (
-    <section
-      id="team"
-      aria-label="Our team"
-      style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>The Team</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 16px",
-          }}>
-            The People Behind <GradientText>Your Growth</GradientText>
-          </h2>
-          <p style={{
-            textAlign: "center", color: C.textMuted, maxWidth: 520,
-            margin: "0 auto 48px", lineHeight: 1.7,
-            fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-          }}>
-            Small enough to care. Experienced enough to deliver.
-          </p>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
-          gap: 24,
-        }}>
-          {TEAM.map((member, i) => (
-            <FadeUp key={member.name} delay={i * 0.08}>
-              <TeamCard member={member} />
-            </FadeUp>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TeamCard({ member: m }) {
-  return (
-    <GlassCard style={{ padding: "clamp(20px, 4vw, 28px)", textAlign: "center" }}>
-      {/* Avatar */}
-      <div style={{
-        width: 72, height: 72, borderRadius: "50%",
-        background: `radial-gradient(circle at 40% 40%, ${m.color}, ${m.color}55)`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontWeight: 800, fontSize: 22, color: "#fff",
-        margin: "0 auto 16px",
-        border: `2px solid ${m.color}40`,
-        flexShrink: 0,
-      }}
-        aria-hidden="true"
-      >
-        {m.initials}
-      </div>
-      <h3 style={{ fontWeight: 700, fontSize: 17, color: C.text }}>{m.name}</h3>
-      <div style={{
-        fontSize: 13, color: "#C4B5FD", fontWeight: 600,
-        margin: "4px 0 12px", letterSpacing: "0.03em",
-      }}>
-        {m.role}
-      </div>
-      <p style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.65, marginBottom: 18 }}>
-        {m.bio}
-      </p>
-      {/* Social links */}
-      <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-        {m.socials.linkedin && (
-          <SocialLink href={m.socials.linkedin} label={`${m.name} on LinkedIn`}>in</SocialLink>
-        )}
-        {m.socials.twitter && (
-          <SocialLink href={m.socials.twitter} label={`${m.name} on Twitter`}>𝕏</SocialLink>
-        )}
-        {m.socials.github && (
-          <SocialLink href={m.socials.github} label={`${m.name} on GitHub`}>⌥</SocialLink>
-        )}
-      </div>
-    </GlassCard>
-  );
-}
-
-function SocialLink({ href, label, children }) {
-  return (
-    <a
-      href={href}
-      aria-label={label}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        width: 32, height: 32, borderRadius: 8,
-        background: C.bgCard, border: `1px solid ${C.border}`,
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        color: C.textMuted, textDecoration: "none", fontSize: 13, fontWeight: 700,
-        transition: "border-color 0.2s, color 0.2s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = C.borderHover;
-        e.currentTarget.style.color = C.text;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = C.border;
-        e.currentTarget.style.color = C.textMuted;
-      }}
-    >
-      {children}
-    </a>
-  );
-}
-
-/* ─── Process ─────────────────────────────────────────────── */
-export function Process() {
-  const steps = [
-    { n: "01", title: "Discovery Call",     desc: "We audit your current digital presence, understand your goals, and identify the highest-leverage opportunities." },
-    { n: "02", title: "Strategy & Scope",   desc: "A custom roadmap with deliverables, timelines, and expected ROI — no guesswork, no scope creep." },
-    { n: "03", title: "Build & Launch",     desc: "Design, development, and campaign setup in parallel sprints. You see progress weekly, not at the end." },
-    { n: "04", title: "Optimise & Scale",   desc: "Post-launch data drives every iteration. We A/B test, analyse, and push performance higher every month." },
-  ];
-
-  return (
-    <section
-      id="process"
-      aria-label="Our process"
-      style={{ padding: "clamp(64px, 10vw, 120px) 6vw", background: "rgba(255,255,255,0.01)" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>How We Work</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 56px",
-          }}>
-            Our <GradientText>Proven Process</GradientText>
-          </h2>
-        </FadeUp>
-
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
-          gap: 24,
-        }}>
-          {steps.map((s, i) => (
-            <FadeUp key={s.n} delay={i * 0.08}>
-              <GlassCard style={{ padding: "clamp(20px, 4vw, 28px)" }}>
-                <div style={{
-                  fontWeight: 800, fontSize: 40,
-                  background: C.gradientText,
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                  backgroundClip: "text", marginBottom: 16, lineHeight: 1,
-                }}>
-                  {s.n}
+    <Section id="team">
+      <SectionHeading label="Our Team" title={<>The People Behind <GradientText>Your Growth</GradientText></>} subtitle="Senior specialists who've shipped for startups and enterprises alike." />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: SP.lg, marginTop: SP["2xl"] }}>
+        {TEAM.map((m, i) => (
+          <Reveal key={m.name} delay={(i % 3) * 0.08}>
+            <Tilt3D max={12}>
+              <GlassCard style={{ padding: SP.xl, textAlign: "center", height: "100%" }}>
+                <div aria-hidden="true" style={{ width: 80, height: 80, borderRadius: "50%", margin: "0 auto 16px", background: `linear-gradient(135deg, ${m.color}, ${m.color}88)`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 26, color: "#fff", boxShadow: `0 8px 30px ${m.color}40` }}>{m.avatar}</div>
+                <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 4px" }}>{m.name}</h3>
+                <p style={{ color: C.textMuted, fontSize: 13, margin: "0 0 14px" }}>{m.role}</p>
+                <div style={{ display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap" }}>
+                  {m.tags.map((t) => <Tag key={t}>{t}</Tag>)}
                 </div>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: C.text, marginBottom: 10 }}>{s.title}</h3>
-                <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.65 }}>{s.desc}</p>
               </GlassCard>
-            </FadeUp>
-          ))}
-        </div>
+            </Tilt3D>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }
 
-/* ─── TechStack ───────────────────────────────────────────── */
-export function TechStack() {
-  const techs = [
-    "React", "Next.js", "TypeScript", "Node.js",
-    "Shopify", "Meta Ads", "Google Ads", "n8n",
-    "OpenAI", "Tailwind CSS", "PostgreSQL", "Vercel",
-  ];
-  return (
-    <section
-      id="tech-stack"
-      aria-label="Technologies we use"
-      style={{
-        padding: "clamp(48px, 8vw, 80px) 6vw",
-        borderTop: `1px solid ${C.border}`,
-        borderBottom: `1px solid ${C.border}`,
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <p style={{
-            textAlign: "center", fontSize: 13, color: C.textMuted,
-            fontWeight: 600, letterSpacing: "0.1em", marginBottom: 24,
-            textTransform: "uppercase",
-          }}>
-            Technologies & Platforms We Master
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center" }}>
-            {techs.map((t) => (
-              <span
-                key={t}
-                style={{
-                  padding: "8px 18px", borderRadius: 50,
-                  background: C.bgCard, border: `1px solid ${C.border}`,
-                  color: C.textMuted, fontSize: 13, fontWeight: 500,
-                  transition: "border-color 0.2s, color 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = C.borderHover;
-                  e.currentTarget.style.color = C.text;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = C.border;
-                  e.currentTarget.style.color = C.textMuted;
-                }}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </FadeUp>
-      </div>
-    </section>
-  );
-}
-
-/* ─── FAQ ─────────────────────────────────────────────────── */
-const FAQS = [
-  {
-    q: "How long does a typical project take?",
-    a: "Landing pages: 7–14 days. Full websites: 4–6 weeks. Shopify stores: 3–5 weeks. AI automation: 2–3 weeks. We always give you a timeline before kickoff.",
-  },
-  {
-    q: "Do you work with international clients?",
-    a: "Yes. We have active clients in India, UAE, UK, USA, and Australia. All communication is async-friendly with weekly syncs via video call.",
-  },
-  {
-    q: "What's your minimum project budget?",
-    a: "Engagements typically start from ₹50,000 for a focused landing page to ₹3L+ for full-stack website + ads management. We'll scope it honestly after a discovery call.",
-  },
-  {
-    q: "Do you offer ongoing retainers?",
-    a: "Yes. Most clients stay on a monthly retainer for ads management, website maintenance, and continuous optimisation. Retainers start from ₹25,000/month.",
-  },
-  {
-    q: "Who will I be working with?",
-    a: "You get a dedicated project lead plus direct Slack access to the delivery team. No account managers in the way. Senior team members are hands-on throughout.",
-  },
+/* ------------------------------- Process ------------------------------- */
+const STEPS = [
+  { n: "01", title: "Discovery", desc: "We dig into your goals, audience, and metrics to define what winning actually looks like." },
+  { n: "02", title: "Strategy", desc: "A clear, prioritised roadmap — channels, scope, and milestones mapped to revenue." },
+  { n: "03", title: "Design", desc: "Premium, conversion-focused interfaces and creative, validated against real user behaviour." },
+  { n: "04", title: "Development", desc: "Fast, accessible, scalable builds with rigorous QA and performance baked in." },
+  { n: "05", title: "Launch", desc: "Ship, measure, and iterate — with live reporting and continuous optimisation." },
 ];
 
-export function FAQ() {
-  const [open, setOpen] = useState(null);
+export function Process() {
   return (
-    <section
-      id="faq"
-      aria-label="Frequently asked questions"
-      style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}
-    >
-      <div style={{ maxWidth: 760, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>FAQ</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 48px",
-          }}>
-            Questions <GradientText>Answered</GradientText>
-          </h2>
-        </FadeUp>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {FAQS.map((faq, i) => (
-            <FadeUp key={i} delay={i * 0.05}>
-              <GlassCard hover={false} style={{ overflow: "hidden" }}>
-                <button
-                  onClick={() => setOpen(open === i ? null : i)}
-                  aria-expanded={open === i}
-                  aria-controls={`faq-answer-${i}`}
-                  style={{
-                    width: "100%", background: "none", border: "none",
-                    padding: "clamp(16px, 3vw, 22px)",
-                    display: "flex", justifyContent: "space-between", alignItems: "center",
-                    gap: 16, cursor: "pointer", textAlign: "left",
-                  }}
-                >
-                  <span style={{ fontWeight: 600, fontSize: "clamp(14px, 2vw, 16px)", color: C.text }}>
-                    {faq.q}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      color: C.accent, fontSize: 20, fontWeight: 300, flexShrink: 0,
-                      transform: open === i ? "rotate(45deg)" : "rotate(0)",
-                      transition: "transform 0.25s ease",
-                    }}
-                  >
-                    +
-                  </span>
-                </button>
-                <div
-                  id={`faq-answer-${i}`}
-                  role="region"
-                  style={{
-                    maxHeight: open === i ? 300 : 0,
-                    overflow: "hidden",
-                    transition: "max-height 0.3s ease",
-                  }}
-                >
-                  <p style={{
-                    padding: "0 clamp(16px, 3vw, 22px) clamp(16px, 3vw, 22px)",
-                    color: C.textMuted, fontSize: 14, lineHeight: 1.7,
-                  }}>
-                    {faq.a}
-                  </p>
-                </div>
+    <Section id="process" alt>
+      <SectionHeading label="How We Work" title={<>Our <GradientText>Proven Process</GradientText></>} subtitle="A transparent, repeatable system that turns ambition into shipped results." />
+      <ol style={{ listStyle: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: SP.lg, marginTop: SP["2xl"], padding: 0, counterReset: "step" }}>
+        {STEPS.map((s, i) => (
+          <Reveal as="li" key={s.n} delay={i * 0.08} style={{ position: "relative" }}>
+            <Tilt3D max={9}>
+              <GlassCard style={{ padding: SP.xl, height: "100%" }}>
+                <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1, marginBottom: SP.sm, background: C.gradientText, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>{s.n}</div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px" }}>{s.title}</h3>
+                <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
               </GlassCard>
-            </FadeUp>
+            </Tilt3D>
+          </Reveal>
+        ))}
+      </ol>
+    </Section>
+  );
+}
+
+/* ------------------------------ Tech Stack ----------------------------- */
+const TECHS = ["React", "Next.js", "TypeScript", "Node.js", "Shopify", "Meta Ads", "n8n", "OpenAI", "Tailwind CSS", "PostgreSQL"];
+
+export function TechStack() {
+  return (
+    <section aria-label="Technology stack" style={{ padding: `${SP["4xl"]}px 5vw`, borderTop: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+        <p style={{ textAlign: "center", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", color: C.textDim, marginBottom: SP.lg }}>Tools we build with</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
+          {TECHS.map((t) => (
+            <span key={t} style={{ padding: "10px 20px", borderRadius: RADIUS.pill, background: C.bgCard, border: `1px solid ${C.border}`, color: C.textMuted, fontSize: 14, fontWeight: 500 }}>{t}</span>
           ))}
         </div>
       </div>
@@ -625,454 +160,207 @@ export function FAQ() {
   );
 }
 
-/* ─── Contact ─────────────────────────────────────────────── */
-const CONTACT_INITIAL = { name: "", email: "", company: "", service: "", message: "" };
-const SERVICES_OPTIONS = ["Website Development", "Meta Ads / Paid Social", "Shopify Development", "AI Automation", "Full Growth Package", "Other"];
+/* --------------------------------- FAQ --------------------------------- */
+const FAQS = [
+  { q: "What services does D-Code Studio offer?", a: "We focus on four core areas: performance marketing (Meta Ads), website & web-app development, Shopify builds, and AI automation. Most clients engage us across several of these." },
+  { q: "How long does a typical project take?", a: "Landing pages ship in 1–2 weeks, full websites in 4–8 weeks, and ongoing marketing or automation engagements are continuous. We'll give you a concrete timeline after discovery." },
+  { q: "How much does it cost to work with you?", a: "Projects start around ₹1.5L for focused builds and scale with scope. Retainers for marketing and automation are monthly. We'll quote precisely once we understand your goals." },
+  { q: "Do you work with early-stage startups?", a: "Yes. We work with funded startups and established brands. For very early teams we offer scoped, milestone-based engagements to keep budgets predictable." },
+  { q: "Who will I actually be working with?", a: "Senior specialists — no work is offloaded to juniors. You get direct access to the people building and running your project, plus a dedicated point of contact." },
+  { q: "How do you report on results?", a: "Live dashboards, weekly written updates, and a shared Slack channel. You'll always have real-time visibility into performance and progress." },
+  { q: "What tech stack do you build on?", a: "Primarily React, Next.js, and Node.js for web; Shopify Plus for commerce; and n8n plus the OpenAI platform for automation. We choose tools that scale with you." },
+  { q: "Do you offer ongoing support after launch?", a: "Absolutely. We offer maintenance, optimisation, and growth retainers so your product and campaigns keep improving after go-live." },
+  { q: "Can you take over an existing project?", a: "Often, yes. We'll audit the current build or ad account first, flag risks, then propose a clear plan to stabilise and improve it." },
+  { q: "How do we get started?", a: "Send a message through the contact form below. We'll book a discovery call, scope the work, and share a proposal — usually within a few business days." },
+];
+
+function FaqItem({ item, open, onToggle, id }) {
+  return (
+    <div style={{ borderBottom: `1px solid ${C.border}` }}>
+      <h3 style={{ margin: 0 }}>
+        <button
+          id={`faq-btn-${id}`}
+          aria-expanded={open}
+          aria-controls={`faq-panel-${id}`}
+          onClick={onToggle}
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "20px 4px", background: "none", border: "none", color: C.text, fontSize: 16, fontWeight: 600, cursor: "pointer", textAlign: "left" }}
+        >
+          {item.q}
+          <span aria-hidden="true" style={{ flexShrink: 0, fontSize: 22, lineHeight: 1, color: C.accent, transform: open ? "rotate(45deg)" : "rotate(0deg)", transition: `transform 0.3s ${EASE.out}` }}>＋</span>
+        </button>
+      </h3>
+      <div
+        id={`faq-panel-${id}`}
+        role="region"
+        aria-labelledby={`faq-btn-${id}`}
+        style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: `grid-template-rows 0.3s ${EASE.out}` }}
+      >
+        <div style={{ overflow: "hidden" }}>
+          <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.7, margin: 0, padding: "0 4px 20px" }}>{item.a}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function FAQ() {
+  const [open, setOpen] = useState(0);
+  return (
+    <Section id="faq">
+      <SectionHeading label="FAQ" title={<>Questions <GradientText>Answered</GradientText></>} />
+      <div style={{ maxWidth: 760, margin: `${SP["2xl"]}px auto 0` }}>
+        {FAQS.map((item, i) => (
+          <FaqItem key={i} id={i} item={item} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ------------------------------- Contact ------------------------------- */
+const initialForm = { name: "", email: "", company: "", message: "" };
+
+function validate(values) {
+  const e = {};
+  if (!values.name.trim()) e.name = "Please enter your name.";
+  if (!values.email.trim()) e.email = "Please enter your email.";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) e.email = "Please enter a valid email.";
+  if (!values.message.trim()) e.message = "Tell us a little about your project.";
+  else if (values.message.trim().length < 10) e.message = "Please add a bit more detail (10+ characters).";
+  return e;
+}
+
+const fieldStyle = (hasError) => ({
+  width: "100%",
+  padding: "13px 16px",
+  borderRadius: RADIUS.sm,
+  background: "rgba(255,255,255,0.04)",
+  border: `1px solid ${hasError ? "#F87171" : C.border}`,
+  color: C.text,
+  fontSize: 15,
+  fontFamily: "inherit",
+  outline: "none",
+  transition: `border-color 0.2s ${EASE.out}`,
+});
+
+function Field({ label, name, type = "text", textarea, optional, values, errors, onChange }) {
+  return (
+    <label style={{ display: "block", textAlign: "left" }}>
+      <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.textMuted, marginBottom: 6 }}>
+        {label}{optional && <span style={{ color: C.textDim, fontWeight: 400 }}> (optional)</span>}
+      </span>
+      {textarea ? (
+        <textarea name={name} rows={4} value={values[name]} onChange={onChange} aria-invalid={!!errors[name]} aria-describedby={errors[name] ? `${name}-err` : undefined} style={{ ...fieldStyle(errors[name]), resize: "vertical" }} />
+      ) : (
+        <input name={name} type={type} value={values[name]} onChange={onChange} aria-invalid={!!errors[name]} aria-describedby={errors[name] ? `${name}-err` : undefined} style={fieldStyle(errors[name])} />
+      )}
+      {errors[name] && <span id={`${name}-err`} role="alert" style={{ display: "block", color: "#F87171", fontSize: 12, marginTop: 6 }}>{errors[name]}</span>}
+    </label>
+  );
+}
 
 export function Contact() {
-  const [form, setForm] = useState(CONTACT_INITIAL);
+  const [values, setValues] = useState(initialForm);
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [submitted, setSubmitted] = useState(false);
 
-  const validate = () => {
-    const e = {};
-    if (!form.name.trim())    e.name    = "Name is required.";
-    if (!form.email.trim())   e.email   = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email.";
-    if (!form.message.trim()) e.message = "Tell us a bit about your project.";
-    return e;
-  };
-
-  const handleChange = (e) => {
+  const onChange = (e) => {
     const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
+    setValues((v) => ({ ...v, [name]: value }));
     if (errors[name]) setErrors((er) => ({ ...er, [name]: undefined }));
   };
 
-const handleSubmit = async (data) => {
-  try {
-    const response = await fetch(
-       '${import.meta.env.VITE_API_URL}/api/contact' || "https://your-backend-url.onrender.com/api/contact",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      }
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-      alert("Message sent successfully!");
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const found = validate(values);
+    setErrors(found);
+    if (Object.keys(found).length === 0) {
+      setSubmitted(true);
+      setValues(initialForm);
     }
-  } catch (error) {
-    console.error(error);
-  }
-};
+  };
 
-  const inputStyle = (field) => ({
-    width: "100%", background: C.bgCard,
-    border: `1px solid ${errors[field] ? "#EF4444" : C.border}`,
-    borderRadius: 10, padding: "14px 16px",
-    color: C.text, fontSize: 14, outline: "none",
-    transition: "border-color 0.2s",
-    boxSizing: "border-box",
-  });
-
-  const labelStyle = { fontSize: 13, fontWeight: 600, color: C.textMuted, display: "block", marginBottom: 8 };
-
-  if (status === "success") {
-    return (
-      <section id="contact" style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}>
-        <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: 64, marginBottom: 24 }}>✅</div>
-          <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, marginBottom: 16 }}>
-            <GradientText>Message Received!</GradientText>
-          </h2>
-          <p style={{ color: C.textMuted, lineHeight: 1.7, marginBottom: 32 }}>
-            Thanks for reaching out. We'll review your brief and reply within 1 business day.
-          </p>
-          <MagneticBtn onClick={() => setStatus("idle")}>Send Another Message</MagneticBtn>
-        </div>
-      </section>
-    );
-  }
+  const fieldProps = { values, errors, onChange };
 
   return (
-    <section
-      id="contact"
-      aria-label="Contact us"
-      style={{ padding: "clamp(64px, 10vw, 120px) 6vw" }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <FadeUp>
-          <SectionLabel>Get in Touch</SectionLabel>
-          <h2 style={{
-            textAlign: "center",
-            fontSize: "clamp(1.8rem, 4vw, 3rem)",
-            fontWeight: 800, letterSpacing: "-0.02em", margin: "0 0 16px",
-          }}>
-            Ready to Build <GradientText>Something Great?</GradientText>
-          </h2>
-          <p style={{
-            textAlign: "center", color: C.textMuted, maxWidth: 520, margin: "0 auto 48px",
-            lineHeight: 1.7, fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-          }}>
-            Tell us about your project. We'll send a no-obligation proposal within 24 hours.
-          </p>
-        </FadeUp>
+    <Section id="contact">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: SP["3xl"], alignItems: "start" }}>
+        <Reveal>
+          <SectionHeading align="left" label="Get in Touch" title={<>Ready to Build <GradientText>Something Great?</GradientText></>} subtitle="Tell us about your project and we'll get back to you within two business days." />
+          <div style={{ marginTop: SP.lg, display: "grid", gap: SP.sm }}>
+            {[["✉️", "hello@dcode.studio"], ["📞", "+91 98765 43210"], ["📍", "Bengaluru, India"]].map(([icon, text]) => (
+              <div key={text} style={{ display: "flex", alignItems: "center", gap: 12, color: C.textMuted, fontSize: 15 }}>
+                <span aria-hidden="true">{icon}</span>{text}
+              </div>
+            ))}
+          </div>
+        </Reveal>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
-          gap: "clamp(32px, 6vw, 64px)", alignItems: "start",
-        }}>
-          {/* Left: contact info */}
-          <FadeUp>
-            <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-              {[
-                { icon: "📧", label: "Email", value: "hello@dcode.studio", href: "mailto:hello@dcode.studio" },
-                { icon: "📱", label: "WhatsApp", value: "+91 98765 43210", href: "https://wa.me/919876543210" },
-                { icon: "📍", label: "Location", value: "Pune, Maharashtra, India", href: null },
-              ].map((item) => (
-                <GlassCard key={item.label} style={{ padding: "clamp(16px, 3vw, 24px)", display: "flex", alignItems: "flex-start", gap: 16 }}>
-                  <span style={{ fontSize: 24, flexShrink: 0 }} role="img" aria-label={item.label}>{item.icon}</span>
-                  <div>
-                    <div style={{ fontSize: 12, color: C.textMuted, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
-                    {item.href ? (
-                      <a href={item.href} style={{ color: C.text, textDecoration: "none", fontSize: 15, fontWeight: 500 }}>{item.value}</a>
-                    ) : (
-                      <span style={{ color: C.text, fontSize: 15, fontWeight: 500 }}>{item.value}</span>
-                    )}
-                  </div>
-                </GlassCard>
-              ))}
-
-              <GlassCard style={{ padding: "clamp(16px, 3vw, 24px)" }}>
-                <p style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.7 }}>
-                  ⚡ <strong style={{ color: C.text }}>Avg. response time: 4 hours.</strong> We reply to every serious inquiry the same day during business hours (Mon–Sat, 9am–7pm IST).
-                </p>
-              </GlassCard>
-            </div>
-          </FadeUp>
-
-          {/* Right: form */}
-          <FadeUp delay={0.1}>
-            <GlassCard style={{ padding: "clamp(24px, 5vw, 40px)" }}>
-              <form onSubmit={handleSubmit} noValidate aria-label="Contact form">
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))",
-                  gap: 16, marginBottom: 16,
-                }}>
-                  <div>
-                    <label htmlFor="contact-name" style={labelStyle}>Full Name *</label>
-                    <input
-                      id="contact-name"
-                      name="name"
-                      type="text"
-                      autoComplete="name"
-                      aria-required="true"
-                      aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? "contact-name-err" : undefined}
-                      value={form.name}
-                      onChange={handleChange}
-                      placeholder="Priya Mehta"
-                      style={inputStyle("name")}
-                      onFocus={(e) => (e.target.style.borderColor = C.accent)}
-                      onBlur={(e) => (e.target.style.borderColor = errors.name ? "#EF4444" : C.border)}
-                    />
-                    {errors.name && (
-                      <span id="contact-name-err" role="alert" style={{ fontSize: 12, color: "#EF4444", marginTop: 4, display: "block" }}>{errors.name}</span>
-                    )}
-                  </div>
-                  <div>
-                    <label htmlFor="contact-email" style={labelStyle}>Email *</label>
-                    <input
-                      id="contact-email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      aria-required="true"
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? "contact-email-err" : undefined}
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="priya@brand.com"
-                      style={inputStyle("email")}
-                      onFocus={(e) => (e.target.style.borderColor = C.accent)}
-                      onBlur={(e) => (e.target.style.borderColor = errors.email ? "#EF4444" : C.border)}
-                    />
-                    {errors.email && (
-                      <span id="contact-email-err" role="alert" style={{ fontSize: 12, color: "#EF4444", marginTop: 4, display: "block" }}>{errors.email}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 16 }}>
-                  <label htmlFor="contact-company" style={labelStyle}>Company / Brand</label>
-                  <input
-                    id="contact-company"
-                    name="company"
-                    type="text"
-                    autoComplete="organization"
-                    value={form.company}
-                    onChange={handleChange}
-                    placeholder="Bloom & Co"
-                    style={inputStyle("company")}
-                    onFocus={(e) => (e.target.style.borderColor = C.accent)}
-                    onBlur={(e) => (e.target.style.borderColor = C.border)}
-                  />
-                </div>
-
-                <div style={{ marginBottom: 16 }}>
-                  <label htmlFor="contact-service" style={labelStyle}>Service Needed</label>
-                  <select
-                    id="contact-service"
-                    name="service"
-                    value={form.service}
-                    onChange={handleChange}
-                    style={{ ...inputStyle("service"), appearance: "none", cursor: "pointer" }}
-                  >
-                    <option value="">Select a service…</option>
-                    {SERVICES_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-
-                <div style={{ marginBottom: 24 }}>
-                  <label htmlFor="contact-message" style={labelStyle}>Project Brief *</label>
-                  <textarea
-                    id="contact-message"
-                    name="message"
-                    rows={5}
-                    aria-required="true"
-                    aria-invalid={!!errors.message}
-                    aria-describedby={errors.message ? "contact-message-err" : undefined}
-                    value={form.message}
-                    onChange={handleChange}
-                    placeholder="Tell us about your goals, timeline, and budget…"
-                    style={{
-                      ...inputStyle("message"),
-                      resize: "vertical", minHeight: 120, fontFamily: "inherit",
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = C.accent)}
-                    onBlur={(e) => (e.target.style.borderColor = errors.message ? "#EF4444" : C.border)}
-                  />
-                  {errors.message && (
-                    <span id="contact-message-err" role="alert" style={{ fontSize: 12, color: "#EF4444", marginTop: 4, display: "block" }}>{errors.message}</span>
-                  )}
-                </div>
-
-                {status === "error" && (
-                  <div
-                    role="alert"
-                    style={{
-                      padding: "12px 16px", borderRadius: 8,
-                      background: "rgba(239,68,68,0.1)",
-                      border: "1px solid rgba(239,68,68,0.3)",
-                      color: "#FCA5A5", fontSize: 13, marginBottom: 20,
-                    }}
-                  >
-                    Something went wrong. Please email us directly at hello@dcode.studio.
-                  </div>
-                )}
-
-                <MagneticBtn
-                  primary
-                  onClick={handleSubmit}
-                  aria-label="Submit contact form"
-                  disabled={status === "loading"}
-                  style={{
-                    width: "100%", justifyContent: "center",
-                    opacity: status === "loading" ? 0.7 : 1,
-                    cursor: status === "loading" ? "not-allowed" : "pointer",
-                    display: "flex", alignItems: "center", gap: 8,
-                  }}
-                >
-                  {status === "loading" ? (
-                    <>
-                      <span style={{
-                        width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)",
-                        borderTopColor: "#fff", borderRadius: "50%",
-                        display: "inline-block", animation: "spin 0.7s linear infinite",
-                      }} />
-                      Sending…
-                    </>
-                  ) : "Send Message →"}
-                </MagneticBtn>
+        <Reveal delay={0.1}>
+          <GlassCard hover={false} style={{ padding: "clamp(24px, 4vw, 36px)" }}>
+            {submitted ? (
+              <div role="status" style={{ textAlign: "center", padding: "32px 8px" }}>
+                <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
+                <h3 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 8px" }}>Thanks — message received!</h3>
+                <p style={{ color: C.textMuted, fontSize: 15, lineHeight: 1.6, margin: "0 0 20px" }}>We'll be in touch shortly. In the meantime, feel free to explore our work.</p>
+                <MagneticBtn onClick={() => setSubmitted(false)}>Send another</MagneticBtn>
+              </div>
+            ) : (
+              <form onSubmit={onSubmit} noValidate style={{ display: "grid", gap: SP.md }}>
+                <Field label="Name" name="name" {...fieldProps} />
+                <Field label="Email" name="email" type="email" {...fieldProps} />
+                <Field label="Company" name="company" optional {...fieldProps} />
+                <Field label="Project details" name="message" textarea {...fieldProps} />
+                <MagneticBtn primary type="submit" style={{ width: "100%", marginTop: 4 }}>Send Message →</MagneticBtn>
               </form>
-            </GlassCard>
-          </FadeUp>
-        </div>
+            )}
+          </GlassCard>
+        </Reveal>
       </div>
-    </section>
+    </Section>
   );
 }
 
-/* ─── Footer ──────────────────────────────────────────────── */
+/* -------------------------------- Footer ------------------------------- */
 const FOOTER_LINKS = {
-  Services: ["Meta Ads", "Website Dev", "Shopify Dev", "AI Automation"],
-  Company:  ["About", "Team", "Process", "Contact"],
-  Legal:    ["Privacy Policy", "Terms of Service"],
+  Company: ["About", "Team", "Careers", "Contact"],
+  Services: ["Meta Ads", "Web Development", "Shopify", "AI Automation"],
+  Resources: ["Case Studies", "Process", "FAQ", "Blog"],
 };
 
-const SOCIAL_LINKS = [
-  { label: "LinkedIn", href: "https://linkedin.com/company/dcode-studio", icon: "in" },
-  { label: "Instagram", href: "https://instagram.com/dcode.studio", icon: "IG" },
-  { label: "Twitter / X", href: "https://twitter.com/dcodestudio", icon: "𝕏" },
-  { label: "WhatsApp", href: "https://wa.me/919876543210", icon: "WA" },
-];
-
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [nlStatus, setNlStatus] = useState("idle"); // idle | success
-
-  const handleNewsletter = (e) => {
-    e.preventDefault();
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-    // TODO: Connect to newsletter API (Mailchimp / ConvertKit)
-    setNlStatus("success");
-  };
-
   return (
-    <footer style={{ borderTop: `1px solid ${C.border}` }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-
-      {/* Main footer grid */}
-      <div style={{ padding: "clamp(48px, 8vw, 80px) 6vw 0", maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
-          gap: "clamp(32px, 5vw, 48px)",
-        }}>
-          {/* Brand column */}
-          <div style={{ gridColumn: "span 1" }}>
-            <div style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em", marginBottom: 16 }}>
-              <GradientText>D-Code</GradientText>
-              <span style={{ color: C.text }}> Studio</span>
+    <footer style={{ borderTop: `1px solid ${C.border}`, padding: `${SP["3xl"]}px 5vw ${SP.xl}px`, background: C.bgAlt }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(220px,1.5fr) repeat(3, minmax(120px,1fr))", gap: SP["2xl"], paddingBottom: SP["2xl"] }} className="footer-grid">
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em", marginBottom: 12 }}>
+              <GradientText>D-Code</GradientText> Studio
             </div>
-            <p style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.7, marginBottom: 20, maxWidth: 220 }}>
-              Premium digital studio building brands, automation, and growth systems for ambitious businesses.
+            <p style={{ color: C.textMuted, fontSize: 14, lineHeight: 1.7, maxWidth: 280, margin: 0 }}>
+              Premium websites, performance marketing, and AI automation for ambitious brands.
             </p>
-            {/* Social links */}
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              {SOCIAL_LINKS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`D-Code Studio on ${s.label}`}
-                  style={{
-                    width: 36, height: 36, borderRadius: 8,
-                    background: C.bgCard, border: `1px solid ${C.border}`,
-                    display: "inline-flex", alignItems: "center", justifyContent: "center",
-                    color: C.textMuted, textDecoration: "none", fontSize: 11, fontWeight: 700,
-                    transition: "border-color 0.2s, color 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = C.borderHover;
-                    e.currentTarget.style.color = C.text;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = C.border;
-                    e.currentTarget.style.color = C.textMuted;
-                  }}
-                >
-                  {s.icon}
-                </a>
-              ))}
-            </div>
           </div>
-
-          {/* Link columns */}
           {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
-            <div key={heading}>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 16, letterSpacing: "0.05em" }}>
-                {heading.toUpperCase()}
-              </h3>
-              <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+            <nav key={heading} aria-label={heading}>
+              <h4 style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: C.text, margin: "0 0 14px" }}>{heading}</h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
                 {links.map((l) => (
                   <li key={l}>
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById(l.toLowerCase().replace(/ /g, "-"))?.scrollIntoView({ behavior: "smooth" });
-                      }}
-                      style={{ color: C.textMuted, textDecoration: "none", fontSize: 13, transition: "color 0.2s" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}
-                    >
-                      {l}
-                    </a>
+                    <a href={`#${l.toLowerCase().replace(/ /g, "-")}`} style={{ color: C.textMuted, fontSize: 14, textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = C.text)} onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}>{l}</a>
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
-
-          {/* Newsletter */}
-          <div>
-            <h3 style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 16, letterSpacing: "0.05em" }}>
-              STAY IN THE LOOP
-            </h3>
-            <p style={{ color: C.textMuted, fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>
-              Monthly insights on digital marketing, AI, and growth.
-            </p>
-            {nlStatus === "success" ? (
-              <p style={{ color: "#10B981", fontSize: 13, fontWeight: 600 }}>✓ You're subscribed!</p>
-            ) : (
-              <form onSubmit={handleNewsletter} aria-label="Newsletter signup" style={{ display: "flex", gap: 8, flexDirection: "column" }}>
-                <input
-                  type="email"
-                  aria-label="Email address for newsletter"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  style={{
-                    background: C.bgCard, border: `1px solid ${C.border}`,
-                    borderRadius: 8, padding: "10px 14px",
-                    color: C.text, fontSize: 13, outline: "none", width: "100%",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = C.accent)}
-                  onBlur={(e) => (e.target.style.borderColor = C.border)}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    background: C.gradient, border: "none", borderRadius: 8,
-                    padding: "10px 16px", color: "#fff", fontSize: 13, fontWeight: 600,
-                    cursor: "pointer", transition: "opacity 0.2s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                >
-                  Subscribe →
-                </button>
-              </form>
-            )}
-          </div>
         </div>
-
-        {/* Bottom bar */}
-        <div style={{
-          borderTop: `1px solid ${C.border}`,
-          padding: "clamp(16px, 3vw, 24px) 0",
-          marginTop: "clamp(32px, 6vw, 56px)",
-          display: "flex", flexWrap: "wrap", gap: 12,
-          justifyContent: "space-between", alignItems: "center",
-        }}>
-          <span style={{ color: C.textDim, fontSize: 13 }}>
-            © 2026 D-Code Studio. All rights reserved.
-          </span>
-          <span style={{ color: C.textDim, fontSize: 13 }}>
-            Made with ❤️ in Pune, India
-          </span>
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: SP.lg, display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "space-between", alignItems: "center" }}>
+          <p style={{ color: C.textDim, fontSize: 13, margin: 0 }}>© 2026 D-Code Studio. All rights reserved.</p>
+          <div style={{ display: "flex", gap: SP.lg }}>
+            {["Privacy", "Terms"].map((l) => (
+              <a key={l} href={`#${l.toLowerCase()}`} style={{ color: C.textDim, fontSize: 13, textDecoration: "none" }}>{l}</a>
+            ))}
+          </div>
         </div>
       </div>
     </footer>

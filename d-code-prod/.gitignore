@@ -7,13 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Environment files
-backend/.env
-
-# Dependencies (Catches node_modules in any folder or subfolder)
-**/node_modules/
-
-# Production build directories
+node_modules
+backend/node_modules
+d-code-prod/node_modules
+*/node_modules
 dist
 dist-ssr
 *.local

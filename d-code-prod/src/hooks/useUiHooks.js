@@ -1,90 +1,104 @@
 import { useState, useEffect, useRef } from "react";
 
-/**
- * Fires once when element enters the viewport.
- * Returns [ref, inView].
- */
-export function useInView(threshold = 0.15) {
+export function useInView(threshold = 0.15, once = true) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
-
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const node = ref.current;
+    if (!node) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
+      ([e]) => {
+        if (e.isIntersecting) {
           setInView(true);
-          obs.disconnect(); // Only trigger once
+          if (once) obs.disconnect();
+        } else if (!once) {
+          setInView(false);
         }
       },
       { threshold }
     );
-    obs.observe(el);
+    obs.observe(node);
     return () => obs.disconnect();
-  }, [threshold]);
-
+  }, [threshold, once]);
   return [ref, inView];
 }
 
-/**
- * Animates a number from 0 → target when inView is true.
- */
 export function useCounter(target, inView, duration = 2000) {
   const [count, setCount] = useState(0);
-
   useEffect(() => {
     if (!inView) return;
-    let start = 0;
-    const step = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
+    let raf;
+    let startTime = null;
+    const tick = (now) => {
+      if (startTime === null) startTime = now;
+      const p = Math.min((now - startTime) / duration, 1);
+      // easeOutExpo for a premium settle
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      setCount(Math.round(target * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [inView, target, duration]);
-
   return count;
 }
 
-/**
- * Returns 0-100 scroll progress.
- */
 export function useScrollProgress() {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
+    let raf = 0;
     const fn = () => {
-      const s = document.documentElement.scrollTop;
-      const h = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(h > 0 ? (s / h) * 100 : 0);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        const s = document.documentElement.scrollTop;
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        setProgress(h > 0 ? (s / h) * 100 : 0);
+        raf = 0;
+      });
     };
     window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
+    fn();
+    return () => {
+      window.removeEventListener("scroll", fn);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
   return progress;
 }
 
-/**
- * Returns true when viewport width < 768px.
- * Uses matchMedia for efficiency over resize events.
- */
-export function useIsMobile() {
-  const [mobile, setMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth < 768 : false
+export function useIsMobile(breakpoint = 768) {
+  const [mobile, setMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
   );
-
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const fn = (e) => setMobile(e.matches);
-    mq.addEventListener("change", fn);
-    setMobile(mq.matches);
-    return () => mq.removeEventListener("change", fn);
-  }, []);
-
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const check = () => setMobile(mq.matches);
+    check();
+    mq.addEventListener("change", check);
+    return () => mq.removeEventListener("change", check);
+  }, [breakpoint]);
   return mobile;
+}
+
+export function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return reduced;
+}
+
+export function useScrollLock(locked) {
+  useEffect(() => {
+    if (!locked) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [locked]);
 }

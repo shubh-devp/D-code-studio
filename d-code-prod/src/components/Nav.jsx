@@ -1,179 +1,213 @@
-import React, { useState, useEffect, useRef } from "react";
-import { C } from "../constants/theme";
+import { useState, useEffect, useCallback } from "react";
+import { C, EASE } from "../constants/theme";
 import { GradientText, MagneticBtn } from "./Primitives";
+import { useScrollLock } from "../hooks/useUiHooks";
+
+const LINKS = [
+  { label: "Services", id: "services" },
+  { label: "Work", id: "portfolio" },
+  { label: "Process", id: "process" },
+  { label: "Team", id: "team" },
+  { label: "FAQ", id: "faq" },
+  { label: "Contact", id: "contact" },
+];
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const menuRef = useRef(null);
+  const [active, setActive] = useState("");
+  useScrollLock(open);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", fn, { passive: true });
+    fn();
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  // Close mobile menu on outside click
+  // Active-section highlighting via IntersectionObserver
   useEffect(() => {
-    if (!open) return;
-    const fn = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", fn);
-    return () => document.removeEventListener("mousedown", fn);
-  }, [open]);
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    LINKS.forEach((l) => {
+      const el = document.getElementById(l.id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, []);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
-  const links = ["Services", "Portfolio", "About", "Team", "Contact"];
-  const scroll = (id) => {
-    document.getElementById(id.toLowerCase().replace(/ /g, "-"))?.scrollIntoView({ behavior: "smooth" });
+  const scroll = useCallback((id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     setOpen(false);
-  };
+  }, []);
 
   return (
     <>
-      <style>{`
-        .nav-desktop-links { display: flex; }
-        .nav-hamburger { display: none; }
-        @media (max-width: 768px) {
-          .nav-desktop-links { display: none !important; }
-          .nav-hamburger { display: flex !important; }
-        }
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-12px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUp {
-          from { opacity: 1; transform: translateY(0); }
-          to   { opacity: 0; transform: translateY(-12px); }
-        }
-      `}</style>
-
+      <a href="#main" className="skip-link">Skip to content</a>
       <nav
-        role="navigation"
-        aria-label="Main navigation"
+        aria-label="Primary"
         style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-          padding: "0 5vw", height: 68, display: "flex",
-          alignItems: "center", justifyContent: "space-between",
-          background: scrolled ? "rgba(6,8,16,0.94)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? `1px solid ${C.border}` : "none",
-          transition: "background 0.4s ease, border-color 0.4s ease",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          padding: "0 5vw",
+          height: 68,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: scrolled ? "rgba(6,8,16,0.82)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px) saturate(140%)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px) saturate(140%)" : "none",
+          borderBottom: `1px solid ${scrolled ? C.border : "transparent"}`,
+          transition: `background 0.4s ${EASE.out}, border-color 0.4s ${EASE.out}, backdrop-filter 0.4s ${EASE.out}`,
         }}
       >
-        {/* Logo */}
         <button
-          aria-label="Go to top"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="D-Code Studio, back to top"
           style={{
-            background: "none", border: "none", cursor: "pointer",
-            fontWeight: 800, fontSize: 22, letterSpacing: "-0.02em", padding: 0,
+            fontWeight: 800,
+            fontSize: 22,
+            letterSpacing: "-0.02em",
+            cursor: "pointer",
+            background: "none",
+            border: "none",
+            color: C.text,
+            padding: 0,
           }}
         >
-          <GradientText>D-Code</GradientText>
-          <span style={{ color: C.text }}> Studio</span>
+          <GradientText>D-Code</GradientText> Studio
         </button>
 
-        {/* Desktop links */}
-        <div className="nav-desktop-links" style={{ gap: 32, alignItems: "center" }}>
-          {links.map((l) => (
+        <div style={{ display: "flex", gap: 32, alignItems: "center" }} className="desktop-nav">
+          {LINKS.map((l) => (
             <button
-              key={l}
-              onClick={() => scroll(l)}
-              aria-label={`Navigate to ${l}`}
+              key={l.id}
+              onClick={() => scroll(l.id)}
+              aria-current={active === l.id ? "true" : undefined}
               style={{
-                background: "none", border: "none", color: C.textMuted,
-                fontSize: 14, cursor: "pointer", fontWeight: 500,
-                transition: "color 0.2s", padding: "4px 0",
+                position: "relative",
+                background: "none",
+                border: "none",
+                color: active === l.id ? C.text : C.textMuted,
+                fontSize: 14,
+                cursor: "pointer",
+                fontWeight: 500,
+                padding: "4px 0",
+                transition: `color 0.2s ${EASE.out}`,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = active === l.id ? C.text : C.textMuted)}
             >
-              {l}
+              {l.label}
+              <span
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  bottom: -2,
+                  height: 2,
+                  width: active === l.id ? "100%" : "0%",
+                  background: C.gradient,
+                  borderRadius: 2,
+                  transition: `width 0.3s ${EASE.out}`,
+                }}
+              />
             </button>
           ))}
-          <MagneticBtn
-            primary
-            style={{ padding: "10px 24px", fontSize: 14 }}
-            onClick={() => scroll("Contact")}
-            aria-label="Get started — navigate to contact"
-          >
+          <MagneticBtn primary style={{ padding: "10px 24px", fontSize: 14 }} onClick={() => scroll("contact")}>
             Get Started
           </MagneticBtn>
         </div>
 
-        {/* Hamburger */}
         <button
-          className="nav-hamburger"
           onClick={() => setOpen((o) => !o)}
-          aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           aria-controls="mobile-menu"
+          aria-label={open ? "Close menu" : "Open menu"}
           style={{
+            display: "none",
             background: "none",
             border: `1px solid ${C.border}`,
-            borderRadius: 8, padding: "8px 14px",
-            color: C.text, cursor: "pointer",
-            fontSize: 18, lineHeight: 1,
-            alignItems: "center", justifyContent: "center",
-            transition: "border-color 0.2s, background 0.2s",
+            borderRadius: 8,
+            width: 42,
+            height: 42,
+            color: C.text,
+            cursor: "pointer",
+            fontSize: 18,
+            alignItems: "center",
+            justifyContent: "center",
           }}
+          className="mobile-menu-btn"
         >
           {open ? "✕" : "☰"}
         </button>
       </nav>
 
       {/* Mobile menu overlay */}
-      {open && (
-        <div
-          id="mobile-menu"
-          ref={menuRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile navigation menu"
-          style={{
-            position: "fixed", top: 68, left: 0, right: 0,
-            zIndex: 99,
-            background: "rgba(6,8,16,0.97)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            borderBottom: `1px solid ${C.border}`,
-            padding: "28px 6vw 36px",
-            display: "flex", flexDirection: "column", gap: 4,
-            animation: "slideDown 0.28s ease",
-          }}
-        >
-          {links.map((l, i) => (
-            <button
-              key={l}
-              onClick={() => scroll(l)}
-              style={{
-                background: "none", border: "none",
-                color: C.text, fontSize: 18, cursor: "pointer",
-                fontWeight: 600, textAlign: "left",
-                padding: "14px 0",
-                borderBottom: i < links.length - 1 ? `1px solid ${C.border}` : "none",
-                transition: "color 0.2s",
-                animationDelay: `${i * 0.04}s`,
-              }}
-            >
-              {l}
-            </button>
-          ))}
-          <div style={{ marginTop: 24 }}>
-            <MagneticBtn primary onClick={() => scroll("Contact")} style={{ width: "100%" }}>
-              Get Started →
-            </MagneticBtn>
-          </div>
+      <div
+        id="mobile-menu"
+        aria-hidden={!open}
+        style={{
+          position: "fixed",
+          inset: 0,
+          top: 68,
+          zIndex: 99,
+          background: "rgba(6,8,16,0.97)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          padding: "32px 6vw",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          transform: open ? "translateY(0)" : "translateY(-12px)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transition: `opacity 0.3s ${EASE.out}, transform 0.3s ${EASE.out}`,
+        }}
+      >
+        {LINKS.map((l, i) => (
+          <button
+            key={l.id}
+            onClick={() => scroll(l.id)}
+            tabIndex={open ? 0 : -1}
+            style={{
+              background: "none",
+              border: "none",
+              borderBottom: `1px solid ${C.border}`,
+              color: C.text,
+              fontSize: 18,
+              fontWeight: 600,
+              cursor: "pointer",
+              textAlign: "left",
+              padding: "16px 0",
+              opacity: open ? 1 : 0,
+              transform: open ? "translateX(0)" : "translateX(-12px)",
+              transition: `opacity 0.3s ${EASE.out} ${0.05 * i + 0.05}s, transform 0.3s ${EASE.out} ${0.05 * i + 0.05}s`,
+            }}
+          >
+            {l.label}
+          </button>
+        ))}
+        <div style={{ marginTop: 24 }}>
+          <MagneticBtn primary style={{ width: "100%" }} onClick={() => scroll("contact")}>
+            Get Started
+          </MagneticBtn>
         </div>
-      )}
+      </div>
     </>
   );
 }
@@ -181,29 +215,25 @@ export function Nav() {
 export function ScrollProgress() {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
+    let raf = 0;
     const fn = () => {
-      const s = document.documentElement.scrollTop;
-      const h = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(h > 0 ? (s / h) * 100 : 0);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        const s = document.documentElement.scrollTop;
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        setProgress(h > 0 ? (s / h) * 100 : 0);
+        raf = 0;
+      });
     };
     window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
+    return () => {
+      window.removeEventListener("scroll", fn);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
   return (
-    <div
-      role="progressbar"
-      aria-label="Page scroll progress"
-      aria-valuenow={Math.round(progress)}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, height: 3 }}
-    >
-      <div
-        style={{
-          height: "100%", width: `${progress}%`,
-          background: C.gradient, transition: "width 0.1s",
-        }}
-      />
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, height: 3, pointerEvents: "none" }} aria-hidden="true">
+      <div style={{ height: "100%", width: `${progress}%`, background: C.gradient, transition: "width 0.1s linear" }} />
     </div>
   );
 }

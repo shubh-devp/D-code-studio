@@ -1,215 +1,319 @@
-import React, { useRef, useMemo, Suspense, useEffect, useCallback } from "react";
+/* eslint-disable react-hooks/immutability -- useFrame mutates three.js objects by design */
+import { useRef, useMemo, useEffect, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float } from "@react-three/drei";
+import { Float, Environment, Lightformer, AdaptiveDpr } from "@react-three/drei";
+import { EffectComposer, Bloom, ChromaticAberration, Vignette } from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
+import { mouseWorld, scrollState } from "../state/pointer";
 
-export const mouseWorld = { x: 0, y: 0 };
+// GPU-side vertex displacement injected into the physical material.
+// Replaces the per-frame CPU vertex loop + computeVertexNormals().
+function useDistortMaterial(reduced) {
+  return useMemo(() => {
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color("#7c4dff"),
+      emissive: new THREE.Color("#2a0a55"),
+      emissiveIntensity: 0.35,
+      metalness: 0.1,
+      roughness: 0.04,
+      transmission: 0.9,
+      thickness: 2.2,
+      ior: 1.55,
+      envMapIntensity: 2.4,
+      clearcoat: 1,
+      clearcoatRoughness: 0.04,
+      transparent: true,
+      opacity: 0.95,
+      side: THREE.DoubleSide,
+    });
+    mat.userData.uTime = { value: 0 };
+    mat.userData.uAmp = { value: reduced ? 0 : 0.14 };
+    mat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = mat.userData.uTime;
+      shader.uniforms.uAmp = mat.userData.uAmp;
+      shader.vertexShader = shader.vertexShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+           uniform float uTime;
+           uniform float uAmp;
+           float distort(vec3 p){
+             return sin(p.x*1.5 + uTime*0.9) * cos(p.y*1.5 + uTime*0.7) * sin(p.z + uTime*0.5)
+                  + 0.5 * sin(p.y*3.0 + uTime*1.3);
+           }`
+        )
+        .replace(
+          "#include <begin_vertex>",
+          `vec3 transformed = position;
+           float d = distort(position);
+           transformed *= 1.0 + d * uAmp;`
+        )
+        .replace(
+          "#include <beginnormal_vertex>",
+          `vec3 objectNormal = normalize(normal + normal * distort(position) * uAmp * 1.5);`
+        );
+    };
+    return mat;
+  }, [reduced]);
+}
 
-// Pre-allocate a single vector to avoid per-frame allocations
-const _vec3 = new THREE.Vector3();
-
-function CrystalMesh({ isMobile }) {
+function CrystalMesh({ isMobile, reduced }) {
+  const groupRef = useRef();
   const meshRef = useRef();
-  // Reduced detail levels: mobile=2, tablet=3, desktop=4 (was 3/5)
-  const detail = isMobile ? 2 : 4;
-  const positionsRef = useRef(null);
-  const clock = useRef(0);
+  const detail = isMobile ? 4 : 6;
+  const material = useDistortMaterial(reduced);
 
-  useEffect(() => {
-    if (!meshRef.current) return;
-    const geo = meshRef.current.geometry;
-    positionsRef.current = Float32Array.from(geo.attributes.position.array);
-  }, [detail]);
+  useFrame((state, delta) => {
+    if (!meshRef.current || !groupRef.current) return;
+    material.userData.uTime.value = state.clock.elapsedTime;
+    const m = meshRef.current;
+    const p = scrollState.progress;
 
-  useFrame((_, delta) => {
-    if (!meshRef.current || !positionsRef.current) return;
-    clock.current += delta;
-    const t = clock.current;
-
-    // Smooth mouse tracking without overriding rotation on mobile
-    if (!isMobile) {
-      meshRef.current.rotation.x += (mouseWorld.y * 0.4 - meshRef.current.rotation.x) * 0.04;
-      meshRef.current.rotation.y += (mouseWorld.x * 0.4 - meshRef.current.rotation.y) * 0.02;
-    } else {
-      meshRef.current.rotation.y += delta * 0.18;
-      meshRef.current.rotation.x += delta * 0.06;
+    if (!reduced) {
+      m.rotation.y += delta * 0.16;
+      m.rotation.x += delta * 0.05;
     }
-    meshRef.current.rotation.z += delta * 0.04;
+    // Mouse parallax (subtle z tilt; x/y rotation handled by auto-spin)
+    m.rotation.z += (mouseWorld.x * 0.2 - m.rotation.z) * 0.02;
 
-    const pos = meshRef.current.geometry.attributes.position;
-    const orig = positionsRef.current;
-    const count = pos.count;
-
-    // Only deform on desktop/tablet; skip on mobile for perf
-    if (!isMobile) {
-      for (let i = 0; i < count; i++) {
-        const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
-        const ox = orig[ix], oy = orig[iy], oz = orig[iz];
-        const noise =
-          Math.sin(ox * 1.5 + t * 0.9) *
-          Math.cos(oy * 1.5 + t * 0.7) *
-          Math.sin(oz + t * 0.5);
-        const scale = 1 + noise * 0.12;
-        pos.setXYZ(i, ox * scale, oy * scale, oz * scale);
-      }
-      pos.needsUpdate = true;
-      // computeVertexNormals is expensive — only call every ~6 frames
-      if (Math.round(t * 60) % 6 === 0) {
-        meshRef.current.geometry.computeVertexNormals();
-      }
-    }
+    // Scroll reactivity: the crystal drifts, tilts and shrinks as you descend.
+    const tx = mouseWorld.x * 0.4 + p * 1.4;
+    const ty = mouseWorld.y * 0.3 - p * 0.6;
+    groupRef.current.position.x += (tx - groupRef.current.position.x) * 0.05;
+    groupRef.current.position.y += (ty - groupRef.current.position.y) * 0.05;
+    const targetScale = 1 - p * 0.25;
+    groupRef.current.scale.setScalar(
+      groupRef.current.scale.x + (targetScale - groupRef.current.scale.x) * 0.05
+    );
+    // Emissive intensifies slightly with scroll for a "charging" feel
+    material.emissiveIntensity = 0.35 + p * 0.5;
   });
 
   return (
-    <Float
-  speed={isMobile ? 0.8 : 1.2}
-  rotationIntensity={isMobile ? 0.05 : 0.1}
-  floatIntensity={isMobile ? 0.15 : 0.3}
->
-      <mesh
-  ref={meshRef}
-  scale={isMobile ? 0.85 : 1}
->
-        <icosahedronGeometry
-  args={[isMobile ? 1.2 : 1.8, detail]}
-/>
-        <meshPhysicalMaterial
-          color="#7c4dff"
-          emissive="#1a0038"
-          emissiveIntensity={0.15}
-          metalness={0.05}
-          roughness={0.0}
-          transmission={isMobile ? 0.7 : 0.88}
-          thickness={2.4}
-          ior={1.6}
-          envMapIntensity={1.8}
-          clearcoat={1}
-          clearcoatRoughness={0.05}
-          transparent
-          opacity={0.92}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-    </Float>
+    <group ref={groupRef}>
+      <Float speed={reduced ? 0 : 1.1} rotationIntensity={0.12} floatIntensity={0.3}>
+        <mesh ref={meshRef} material={material}>
+          <icosahedronGeometry args={[1.8, detail]} />
+        </mesh>
+      </Float>
+    </group>
   );
 }
 
-function WireShell({ isMobile }) {
+function WireShell({ reduced }) {
   const ref = useRef();
-  const detail = isMobile ? 1 : 2;
   useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.y -= delta * 0.09;
-    ref.current.rotation.x -= delta * 0.04;
+    if (!ref.current || reduced) return;
+    ref.current.rotation.y -= delta * 0.08;
+    ref.current.rotation.x -= delta * 0.035;
   });
   return (
     <mesh ref={ref}>
-      <icosahedronGeometry
-  args={[isMobile ? 1.6 : 2.3, detail]}
-/>
-      <meshBasicMaterial color="#8B5CF6" wireframe transparent opacity={0.08} />
+      <icosahedronGeometry args={[2.5, 1]} />
+      <meshBasicMaterial color="#8B5CF6" wireframe transparent opacity={0.07} depthWrite={false} />
     </mesh>
   );
 }
 
-function Particles({ isMobile }) {
-  // Reduced particle counts: mobile=120, desktop=400 (was 250/600)
-  const count = isMobile ? 120 : 400;
+// Glowing wireframe torus knot — bloom turns this into a neon ribbon.
+function NeonKnot({ reduced }) {
+  const ref = useRef();
+  useFrame((state, delta) => {
+    if (!ref.current) return;
+    if (!reduced) {
+      ref.current.rotation.x += delta * 0.12;
+      ref.current.rotation.y += delta * 0.08;
+    }
+    ref.current.position.z = -4 - scrollState.progress * 3;
+  });
+  return (
+    <mesh ref={ref} position={[3.2, -1.4, -4]} scale={0.9}>
+      <torusKnotGeometry args={[1, 0.28, 120, 16]} />
+      <meshStandardMaterial
+        color="#06B6D4"
+        emissive="#06B6D4"
+        emissiveIntensity={1.6}
+        wireframe
+        transparent
+        opacity={0.5}
+      />
+    </mesh>
+  );
+}
+
+// Small glowing accent gems scattered for depth; each catches the bloom pass.
+function AccentGems({ isMobile, reduced }) {
+  const gems = useMemo(() => {
+    const colors = ["#8B5CF6", "#06B6D4", "#A78BFA", "#22D3EE", "#C4B5FD"];
+    const n = isMobile ? 4 : 7;
+    const rand = (x) => {
+      const s = Math.sin(x * 127.1) * 43758.5453;
+      return s - Math.floor(s);
+    };
+    return Array.from({ length: n }, (_, i) => ({
+      pos: [(rand(i + 1) - 0.5) * 11, (rand(i + 40) - 0.5) * 7, -2 - rand(i + 80) * 4],
+      scale: 0.12 + rand(i + 120) * 0.22,
+      color: colors[i % colors.length],
+      speed: 0.6 + rand(i + 200),
+    }));
+  }, [isMobile]);
+
+  return (
+    <group>
+      {gems.map((g, i) => (
+        <Float key={i} speed={reduced ? 0 : g.speed} rotationIntensity={1} floatIntensity={1.5}>
+          <mesh position={g.pos} scale={g.scale}>
+            <octahedronGeometry args={[1, 0]} />
+            <meshStandardMaterial color={g.color} emissive={g.color} emissiveIntensity={1.8} roughness={0.2} metalness={0.3} />
+          </mesh>
+        </Float>
+      ))}
+    </group>
+  );
+}
+
+function Particles({ isMobile, reduced }) {
+  const count = isMobile ? 220 : 550;
   const ref = useRef();
 
-  const [positions, sizes] = useMemo(() => {
+  const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
-    const sz = new Float32Array(count);
+    const rand = (n) => {
+      const s = Math.sin(n * 12.9898) * 43758.5453;
+      return s - Math.floor(s);
+    };
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 20;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 14;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 10 - 3;
-      sz[i] = Math.random() * 0.025 + 0.008;
+      pos[i * 3] = (rand(i + 1) - 0.5) * 20;
+      pos[i * 3 + 1] = (rand(i + 101) - 0.5) * 14;
+      pos[i * 3 + 2] = (rand(i + 201) - 0.5) * 10 - 3;
     }
-    return [pos, sz];
+    return pos;
   }, [count]);
 
   useFrame((state) => {
-    if (!ref.current) return;
-    // Use elapsedTime directly (read-only); avoid multiplying by delta unnecessarily
+    if (!ref.current || reduced) return;
     ref.current.rotation.y = state.clock.elapsedTime * 0.012;
     ref.current.rotation.x = state.clock.elapsedTime * 0.005;
   });
 
   return (
-    <points ref={ref}>
+    <points ref={ref} frustumCulled={false}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-size" args={[sizes, 1]} />
       </bufferGeometry>
-      <pointsMaterial
-        color="#a78bfa"
-        size={0.018}
-        sizeAttenuation
-        transparent
-        opacity={0.55}
-        depthWrite={false}
-      />
+      <pointsMaterial color="#a78bfa" size={0.02} sizeAttenuation transparent opacity={0.5} depthWrite={false} />
     </points>
   );
 }
 
-function CursorLight({ isMobile }) {
+function CursorLight() {
   const lightRef = useRef();
   const { viewport } = useThree();
   useFrame(() => {
-    if (!lightRef.current || isMobile) return;
-    lightRef.current.position.x +=
-      (mouseWorld.x * viewport.width * 0.5 - lightRef.current.position.x) * 0.08;
-    lightRef.current.position.y +=
-      (mouseWorld.y * viewport.height * 0.5 - lightRef.current.position.y) * 0.08;
+    if (!lightRef.current) return;
+    lightRef.current.position.x += (mouseWorld.x * viewport.width * 0.5 - lightRef.current.position.x) * 0.08;
+    lightRef.current.position.y += (mouseWorld.y * viewport.height * 0.5 - lightRef.current.position.y) * 0.08;
   });
+  return <pointLight ref={lightRef} color="#06B6D4" intensity={14} distance={16} decay={2} position={[0, 0, 4]} />;
+}
+
+// Camera drifts with the cursor and slowly dollies/orbits as the page scrolls.
+function CameraRig({ reduced }) {
+  useFrame((state, delta) => {
+    const cam = state.camera;
+    const p = scrollState.progress;
+    const tx = (reduced ? 0 : mouseWorld.x * 0.4) + Math.sin(p * Math.PI) * 0.6;
+    const ty = (reduced ? 0 : mouseWorld.y * 0.3) + p * 0.4;
+    const tz = 5.5 + p * 1.5;
+    const k = Math.min(1, delta * 2);
+    cam.position.x += (tx - cam.position.x) * k;
+    cam.position.y += (ty - cam.position.y) * k;
+    cam.position.z += (tz - cam.position.z) * k;
+    cam.lookAt(0, 0, 0);
+  });
+  return null;
+}
+
+function Effects({ isMobile }) {
+  if (isMobile) return null;
   return (
-    <pointLight
-      ref={lightRef}
-      color="#06B6D4"
-      intensity={isMobile ? 6 : 12}
-      distance={14}
-      decay={2}
-      position={[0, 0, 4]}
-    />
+    <EffectComposer multisampling={0} disableNormalPass>
+      <Bloom intensity={0.85} luminanceThreshold={0.18} luminanceSmoothing={0.9} mipmapBlur radius={0.7} />
+      <ChromaticAberration blendFunction={BlendFunction.NORMAL} offset={[0.0006, 0.0006]} radialModulation modulationOffset={0.4} />
+      <Vignette eskil={false} offset={0.2} darkness={0.75} />
+    </EffectComposer>
   );
 }
 
-export function ThreeDBackground({ isMobile }) {
+function Scene({ isMobile, reduced }) {
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-<Canvas
-  camera={{
-    position: [0, 0, isMobile ? 8 : 5.5],
-    fov: isMobile ? 75 : 55,
-  }}
-  gl={{
-    antialias: !isMobile,
-    alpha: true,
-    powerPreference: isMobile ? "low-power" : "high-performance",
-    toneMapping: THREE.ACESFilmicToneMapping,
-    toneMappingExposure: 1.4,
-  }}
-  dpr={isMobile ? [1, 1.5] : [1, 2]}
-  frameloop="always"
-  performance={{ min: 0.5 }}
-  style={{ background: "transparent" }}
->
+    <>
+      <ambientLight color="#1a1040" intensity={1.8} />
+      <directionalLight color="#B8C4FF" intensity={2.8} position={[5, 8, 6]} />
+      <pointLight color="#8B5CF6" intensity={6} position={[-5, -3, 3]} distance={14} decay={2} />
+      <CursorLight />
+
+      <Environment resolution={isMobile ? 64 : 128} frames={1}>
+        <color attach="background" args={["#05060d"]} />
+        <Lightformer intensity={2.4} color="#8B5CF6" position={[-4, 3, -4]} scale={[6, 6, 1]} />
+        <Lightformer intensity={2.0} color="#06B6D4" position={[4, -2, -4]} scale={[6, 6, 1]} />
+        <Lightformer intensity={1.2} color="#ffffff" position={[0, 5, 2]} scale={[8, 2, 1]} />
+      </Environment>
+
+      <CameraRig reduced={reduced} />
+      <CrystalMesh isMobile={isMobile} reduced={reduced} />
+      <WireShell reduced={reduced} />
+      <NeonKnot reduced={reduced} />
+      <AccentGems isMobile={isMobile} reduced={reduced} />
+      <Particles isMobile={isMobile} reduced={reduced} />
+
+      <Effects isMobile={isMobile} />
+    </>
+  );
+}
+
+export function ThreeDBackground({ isMobile, reduced = false }) {
+  // Feed page scroll into the shared state read by useFrame (no re-renders).
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        scrollState.y = window.scrollY;
+        scrollState.progress = h > 0 ? Math.min(1, window.scrollY / h) : 0;
+        raf = 0;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} aria-hidden="true">
+      <Canvas
+        camera={{ position: [0, 0, 5.5], fov: 55 }}
+        gl={{
+          antialias: !isMobile,
+          alpha: true,
+          powerPreference: isMobile ? "low-power" : "high-performance",
+        }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.35;
+        }}
+        dpr={isMobile ? [1, 1.5] : [1, 2]}
+        style={{ background: "transparent" }}
+      >
         <Suspense fallback={null}>
-          <ambientLight color="#1a1040" intensity={2.5} />
-          <directionalLight color="#9FAEF8" intensity={3.5} position={[5, 8, 6]} />
-          <pointLight
-  color="#8B5CF6"
-  intensity={isMobile ? 5 : 8}
-  position={[-5, -3, 3]}
-  distance={isMobile ? 9 : 12}
-/>
-          <CursorLight isMobile={isMobile} />
-          <CrystalMesh isMobile={isMobile} />
-          <WireShell isMobile={isMobile} />
-          <Particles isMobile={isMobile} />
+          <Scene isMobile={isMobile} reduced={reduced} />
         </Suspense>
+        <AdaptiveDpr pixelated />
       </Canvas>
     </div>
   );
